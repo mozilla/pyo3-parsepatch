@@ -1,0 +1,1232 @@
+[
+    {
+        "new": false,
+        "deleted": false,
+        "renamed_from": null,
+        "filename": "gfx/thebes/gfxFont.cpp",
+        "binary": false,
+        "count_add": 16,
+        "count_del": 13,
+        "lines": [
+            [
+                3476,
+                3476,
+                "}"
+            ],
+            [
+                3477,
+                3477,
+                ""
+            ],
+            [
+                3478,
+                3478,
+                "void"
+            ],
+            [
+                3479,
+                3479,
+                "gfxFont::SetupGlyphExtents(DrawTarget* aDrawTarget, uint32_t aGlyphID,"
+            ],
+            [
+                3480,
+                3480,
+                "                           bool aNeedTight, gfxGlyphExtents *aExtents)"
+            ],
+            [
+                3481,
+                3481,
+                "{"
+            ],
+            [
+                3482,
+                3482,
+                "    gfxRect svgBounds;"
+            ],
+            [
+                3483,
+                3483,
+                "    if (mFontEntry->TryGetSVGData(this) && mFontEntry->HasSVGGlyph(aGlyphID) &&"
+            ],
+            [
+                3484,
+                0,
+                "        mFontEntry->GetSVGGlyphExtents(aDrawTarget, aGlyphID, &svgBounds)) {"
+            ],
+            [
+                0,
+                3484,
+                "        mFontEntry->GetSVGGlyphExtents(aDrawTarget, aGlyphID,"
+            ],
+            [
+                0,
+                3485,
+                "                                       GetAdjustedSize(), &svgBounds)) {"
+            ],
+            [
+                3485,
+                3486,
+                "        gfxFloat d2a = aExtents->GetAppUnitsPerDevUnit();"
+            ],
+            [
+                3486,
+                3487,
+                "        aExtents->SetTightGlyphExtents(aGlyphID,"
+            ],
+            [
+                3487,
+                3488,
+                "                                       gfxRect(svgBounds.x * d2a,"
+            ],
+            [
+                3488,
+                3489,
+                "                                               svgBounds.y * d2a,"
+            ],
+            [
+                3489,
+                3490,
+                "                                               svgBounds.width * d2a,"
+            ],
+            [
+                3490,
+                3491,
+                "                                               svgBounds.height * d2a));"
+            ],
+            [
+                3491,
+                3492,
+                "        return;"
+            ],
+            [
+                3492,
+                3493,
+                "    }"
+            ],
+            [
+                3493,
+                3494,
+                ""
+            ],
+            [
+                3494,
+                0,
+                "    cairo_glyph_t glyph;"
+            ],
+            [
+                3495,
+                0,
+                "    glyph.index = aGlyphID;"
+            ],
+            [
+                3496,
+                0,
+                "    glyph.x = 0;"
+            ],
+            [
+                3497,
+                0,
+                "    glyph.y = 0;"
+            ],
+            [
+                3498,
+                0,
+                "    cairo_text_extents_t extents;"
+            ],
+            [
+                3499,
+                0,
+                "    cairo_glyph_extents(gfxFont::RefCairo(aDrawTarget), &glyph, 1, &extents);"
+            ],
+            [
+                0,
+                3495,
+                "    RefPtr<ScaledFont> sf = GetScaledFont(aDrawTarget);"
+            ],
+            [
+                0,
+                3496,
+                "    uint16_t glyphIndex = aGlyphID;"
+            ],
+            [
+                0,
+                3497,
+                "    GlyphMetrics metrics;"
+            ],
+            [
+                0,
+                3498,
+                "    if (mAntialiasOption == kAntialiasNone) {"
+            ],
+            [
+                0,
+                3499,
+                "        sf->GetGlyphDesignMetrics(&glyphIndex, 1, &metrics);"
+            ],
+            [
+                0,
+                3500,
+                "    } else {"
+            ],
+            [
+                0,
+                3501,
+                "        aDrawTarget->GetGlyphRasterizationMetrics(sf, &glyphIndex, 1, &metrics);"
+            ],
+            [
+                0,
+                3502,
+                "    }"
+            ],
+            [
+                3500,
+                3503,
+                ""
+            ],
+            [
+                3501,
+                3504,
+                "    const Metrics& fontMetrics = GetMetrics(eHorizontal);"
+            ],
+            [
+                3502,
+                3505,
+                "    int32_t appUnitsPerDevUnit = aExtents->GetAppUnitsPerDevUnit();"
+            ],
+            [
+                3503,
+                0,
+                "    if (!aNeedTight && extents.x_bearing >= 0 &&"
+            ],
+            [
+                3504,
+                0,
+                "        extents.y_bearing >= -fontMetrics.maxAscent &&"
+            ],
+            [
+                3505,
+                0,
+                "        extents.height + extents.y_bearing <= fontMetrics.maxDescent) {"
+            ],
+            [
+                0,
+                3506,
+                "    if (!aNeedTight && metrics.mXBearing >= 0.0 &&"
+            ],
+            [
+                0,
+                3507,
+                "        metrics.mYBearing >= -fontMetrics.maxAscent &&"
+            ],
+            [
+                0,
+                3508,
+                "        metrics.mHeight + metrics.mYBearing <= fontMetrics.maxDescent) {"
+            ],
+            [
+                3506,
+                3509,
+                "        uint32_t appUnitsWidth ="
+            ],
+            [
+                3507,
+                0,
+                "            uint32_t(ceil((extents.x_bearing + extents.width)*appUnitsPerDevUnit));"
+            ],
+            [
+                0,
+                3510,
+                "            uint32_t(ceil((metrics.mXBearing + metrics.mWidth)*appUnitsPerDevUnit));"
+            ],
+            [
+                3508,
+                3511,
+                "        if (appUnitsWidth < gfxGlyphExtents::INVALID_WIDTH) {"
+            ],
+            [
+                3509,
+                3512,
+                "            aExtents->SetContainedGlyphWidthAppUnits(aGlyphID, uint16_t(appUnitsWidth));"
+            ],
+            [
+                3510,
+                3513,
+                "            return;"
+            ],
+            [
+                3511,
+                3514,
+                "        }"
+            ],
+            [
+                3512,
+                3515,
+                "    }"
+            ],
+            [
+                3513,
+                3516,
+                "#ifdef DEBUG_TEXT_RUN_STORAGE_METRICS"
+            ],
+            [
+                3514,
+                3517,
+                "    if (!aNeedTight) {"
+            ],
+            [
+                3515,
+                3518,
+                "        ++gGlyphExtentsSetupFallBackToTight;"
+            ],
+            [
+                3516,
+                3519,
+                "    }"
+            ],
+            [
+                3517,
+                3520,
+                "#endif"
+            ],
+            [
+                3518,
+                3521,
+                ""
+            ],
+            [
+                3519,
+                3522,
+                "    gfxFloat d2a = appUnitsPerDevUnit;"
+            ],
+            [
+                3520,
+                0,
+                "    gfxRect bounds(extents.x_bearing*d2a, extents.y_bearing*d2a,"
+            ],
+            [
+                3521,
+                0,
+                "                   extents.width*d2a, extents.height*d2a);"
+            ],
+            [
+                0,
+                3523,
+                "    gfxRect bounds(metrics.mXBearing * d2a, metrics.mYBearing * d2a,"
+            ],
+            [
+                0,
+                3524,
+                "                   metrics.mWidth * d2a, metrics.mHeight * d2a);"
+            ],
+            [
+                3522,
+                3525,
+                "    aExtents->SetTightGlyphExtents(aGlyphID, bounds);"
+            ],
+            [
+                3523,
+                3526,
+                "}"
+            ],
+            [
+                3524,
+                3527,
+                ""
+            ],
+            [
+                3525,
+                3528,
+                "// Try to initialize font metrics by reading sfnt tables directly;"
+            ],
+            [
+                3526,
+                3529,
+                "// set mIsValid=TRUE and return TRUE on success."
+            ],
+            [
+                3527,
+                3530,
+                "// Return FALSE if the gfxFontEntry subclass does not"
+            ],
+            [
+                3528,
+                3531,
+                "// implement GetFontTable(), or for non-sfnt fonts where tables are"
+            ],
+            [
+                3529,
+                3532,
+                "// not available."
+            ]
+        ]
+    },
+    {
+        "new": false,
+        "deleted": false,
+        "renamed_from": null,
+        "filename": "gfx/thebes/gfxFontEntry.cpp",
+        "binary": false,
+        "count_add": 3,
+        "count_del": 12,
+        "lines": [
+            [
+                29,
+                29,
+                "#include \"mozilla/Likely.h\""
+            ],
+            [
+                30,
+                30,
+                "#include \"mozilla/MemoryReporting.h\""
+            ],
+            [
+                31,
+                31,
+                "#include \"mozilla/Preferences.h\""
+            ],
+            [
+                32,
+                32,
+                "#include \"mozilla/Services.h\""
+            ],
+            [
+                33,
+                33,
+                "#include \"mozilla/Telemetry.h\""
+            ],
+            [
+                34,
+                34,
+                "#include \"gfxSVGGlyphs.h\""
+            ],
+            [
+                35,
+                35,
+                "#include \"gfx2DGlue.h\""
+            ],
+            [
+                36,
+                36,
+                ""
+            ],
+            [
+                37,
+                0,
+                "#include \"cairo.h\""
+            ],
+            [
+                38,
+                0,
+                ""
+            ],
+            [
+                39,
+                37,
+                "#include \"harfbuzz/hb.h\""
+            ],
+            [
+                40,
+                38,
+                "#include \"harfbuzz/hb-ot.h\""
+            ],
+            [
+                41,
+                39,
+                "#include \"graphite2/Font.h\""
+            ],
+            [
+                42,
+                40,
+                ""
+            ],
+            [
+                43,
+                41,
+                "#include <algorithm>"
+            ],
+            [
+                44,
+                42,
+                ""
+            ],
+            [
+                45,
+                43,
+                "using namespace mozilla;"
+            ],
+            [
+                46,
+                44,
+                "using namespace mozilla::gfx;"
+            ],
+            [
+                314,
+                312,
+                "gfxFontEntry::HasSVGGlyph(uint32_t aGlyphId)"
+            ],
+            [
+                315,
+                313,
+                "{"
+            ],
+            [
+                316,
+                314,
+                "    NS_ASSERTION(mSVGInitialized, \"SVG data has not yet been loaded. TryGetSVGData() first.\");"
+            ],
+            [
+                317,
+                315,
+                "    return mSVGGlyphs->HasSVGGlyph(aGlyphId);"
+            ],
+            [
+                318,
+                316,
+                "}"
+            ],
+            [
+                319,
+                317,
+                ""
+            ],
+            [
+                320,
+                318,
+                "bool"
+            ],
+            [
+                321,
+                319,
+                "gfxFontEntry::GetSVGGlyphExtents(DrawTarget* aDrawTarget, uint32_t aGlyphId,"
+            ],
+            [
+                322,
+                0,
+                "                                 gfxRect *aResult)"
+            ],
+            [
+                0,
+                320,
+                "                                 gfxFloat aSize, gfxRect* aResult)"
+            ],
+            [
+                323,
+                321,
+                "{"
+            ],
+            [
+                324,
+                322,
+                "    MOZ_ASSERT(mSVGInitialized,"
+            ],
+            [
+                325,
+                323,
+                "               \"SVG data has not yet been loaded. TryGetSVGData() first.\");"
+            ],
+            [
+                326,
+                324,
+                "    MOZ_ASSERT(mUnitsPerEm >= kMinUPEM && mUnitsPerEm <= kMaxUPEM,"
+            ],
+            [
+                327,
+                325,
+                "               \"font has invalid unitsPerEm\");"
+            ],
+            [
+                328,
+                326,
+                ""
+            ],
+            [
+                329,
+                0,
+                "    cairo_matrix_t fontMatrix;"
+            ],
+            [
+                330,
+                0,
+                "    cairo_get_font_matrix(gfxFont::RefCairo(aDrawTarget), &fontMatrix);"
+            ],
+            [
+                331,
+                0,
+                ""
+            ],
+            [
+                332,
+                0,
+                "    gfxMatrix svgToAppSpace(fontMatrix.xx, fontMatrix.yx,"
+            ],
+            [
+                333,
+                0,
+                "                            fontMatrix.xy, fontMatrix.yy,"
+            ],
+            [
+                334,
+                0,
+                "                            fontMatrix.x0, fontMatrix.y0);"
+            ],
+            [
+                335,
+                0,
+                "    svgToAppSpace.PreScale(1.0f / mUnitsPerEm, 1.0f / mUnitsPerEm);"
+            ],
+            [
+                336,
+                0,
+                ""
+            ],
+            [
+                337,
+                0,
+                "    return mSVGGlyphs->GetGlyphExtents(aGlyphId, svgToAppSpace, aResult);"
+            ],
+            [
+                0,
+                327,
+                "    gfxMatrix svgToApp(aSize / mUnitsPerEm, 0, 0, aSize / mUnitsPerEm, 0, 0);"
+            ],
+            [
+                0,
+                328,
+                "    return mSVGGlyphs->GetGlyphExtents(aGlyphId, svgToApp, aResult);"
+            ],
+            [
+                338,
+                329,
+                "}"
+            ],
+            [
+                339,
+                330,
+                ""
+            ],
+            [
+                340,
+                331,
+                "void"
+            ],
+            [
+                341,
+                332,
+                "gfxFontEntry::RenderSVGGlyph(gfxContext *aContext, uint32_t aGlyphId,"
+            ],
+            [
+                342,
+                333,
+                "                             SVGContextPaint* aContextPaint)"
+            ],
+            [
+                343,
+                334,
+                "{"
+            ],
+            [
+                344,
+                335,
+                "    NS_ASSERTION(mSVGInitialized, \"SVG data has not yet been loaded. TryGetSVGData() first.\");"
+            ],
+            [
+                345,
+                336,
+                "    mSVGGlyphs->RenderGlyph(aContext, aGlyphId, aContextPaint);"
+            ]
+        ]
+    },
+    {
+        "new": false,
+        "deleted": false,
+        "renamed_from": null,
+        "filename": "gfx/thebes/gfxFontEntry.h",
+        "binary": false,
+        "count_add": 1,
+        "count_del": 1,
+        "lines": [
+            [
+                200,
+                200,
+                "    // ReadCMAP() must *always* set the mCharacterMap pointer to a valid"
+            ],
+            [
+                201,
+                201,
+                "    // gfxCharacterMap, even if empty, as other code assumes this pointer"
+            ],
+            [
+                202,
+                202,
+                "    // can be safely dereferenced."
+            ],
+            [
+                203,
+                203,
+                "    virtual nsresult ReadCMAP(FontInfoData *aFontInfoData = nullptr);"
+            ],
+            [
+                204,
+                204,
+                ""
+            ],
+            [
+                205,
+                205,
+                "    bool TryGetSVGData(gfxFont* aFont);"
+            ],
+            [
+                206,
+                206,
+                "    bool HasSVGGlyph(uint32_t aGlyphId);"
+            ],
+            [
+                207,
+                207,
+                "    bool GetSVGGlyphExtents(DrawTarget* aDrawTarget, uint32_t aGlyphId,"
+            ],
+            [
+                208,
+                0,
+                "                            gfxRect *aResult);"
+            ],
+            [
+                0,
+                208,
+                "                            gfxFloat aSize, gfxRect* aResult);"
+            ],
+            [
+                209,
+                209,
+                "    void RenderSVGGlyph(gfxContext *aContext, uint32_t aGlyphId,"
+            ],
+            [
+                210,
+                210,
+                "                        mozilla::SVGContextPaint* aContextPaint);"
+            ],
+            [
+                211,
+                211,
+                "    // Call this when glyph geometry or rendering has changed"
+            ],
+            [
+                212,
+                212,
+                "    // (e.g. animated SVG glyphs)"
+            ],
+            [
+                213,
+                213,
+                "    void NotifyGlyphsChanged();"
+            ],
+            [
+                214,
+                214,
+                ""
+            ],
+            [
+                215,
+                215,
+                "    bool     TryGetColorGlyphs();"
+            ],
+            [
+                216,
+                216,
+                "    bool     GetColorLayersInfo(uint32_t aGlyphId,"
+            ]
+        ]
+    },
+    {
+        "new": false,
+        "deleted": false,
+        "renamed_from": null,
+        "filename": "gfx/thebes/gfxTextRun.cpp",
+        "binary": false,
+        "count_add": 0,
+        "count_del": 17,
+        "lines": [
+            [
+                24,
+                24,
+                "#include \"mozilla/gfx/Logging.h\"        // for gfxCriticalError"
+            ],
+            [
+                25,
+                25,
+                "#include \"mozilla/UniquePtr.h\""
+            ],
+            [
+                26,
+                26,
+                "#include \"TextDrawTarget.h\""
+            ],
+            [
+                27,
+                27,
+                ""
+            ],
+            [
+                28,
+                28,
+                "#ifdef XP_WIN"
+            ],
+            [
+                29,
+                29,
+                "#include \"gfxWindowsPlatform.h\""
+            ],
+            [
+                30,
+                30,
+                "#endif"
+            ],
+            [
+                31,
+                31,
+                ""
+            ],
+            [
+                32,
+                0,
+                "#include \"cairo.h\""
+            ],
+            [
+                33,
+                0,
+                ""
+            ],
+            [
+                34,
+                32,
+                "using namespace mozilla;"
+            ],
+            [
+                35,
+                33,
+                "using namespace mozilla::gfx;"
+            ],
+            [
+                36,
+                34,
+                "using namespace mozilla::unicode;"
+            ],
+            [
+                37,
+                35,
+                "using mozilla::services::GetObserverService;"
+            ],
+            [
+                38,
+                36,
+                ""
+            ],
+            [
+                39,
+                37,
+                "static const char16_t kEllipsisChar[] = { 0x2026, 0x0 };"
+            ],
+            [
+                40,
+                38,
+                "static const char16_t kASCIIPeriodsChar[] = { '.', '.', '.', 0x0 };"
+            ],
+            [
+                41,
+                39,
+                ""
+            ],
+            [
+                1683,
+                1681,
+                "        if (MOZ_UNLIKELY(font->GetStyle()->size == 0) ||"
+            ],
+            [
+                1684,
+                1682,
+                "            MOZ_UNLIKELY(font->GetStyle()->sizeAdjust == 0.0f)) {"
+            ],
+            [
+                1685,
+                1683,
+                "            continue;"
+            ],
+            [
+                1686,
+                1684,
+                "        }"
+            ],
+            [
+                1687,
+                1685,
+                ""
+            ],
+            [
+                1688,
+                1686,
+                "        uint32_t start = run.mCharacterOffset;"
+            ],
+            [
+                1689,
+                1687,
+                "        uint32_t end = i + 1 < runCount ?"
+            ],
+            [
+                1690,
+                1688,
+                "            glyphRuns[i + 1].mCharacterOffset : GetLength();"
+            ],
+            [
+                1691,
+                0,
+                "        bool fontIsSetup = false;"
+            ],
+            [
+                1692,
+                1689,
+                "        uint32_t j;"
+            ],
+            [
+                1693,
+                1690,
+                "        gfxGlyphExtents *extents = font->GetOrCreateGlyphExtents(mAppUnitsPerDevUnit);"
+            ],
+            [
+                1694,
+                1691,
+                ""
+            ],
+            [
+                1695,
+                1692,
+                "        for (j = start; j < end; ++j) {"
+            ],
+            [
+                1696,
+                1693,
+                "            const gfxTextRun::CompressedGlyph *glyphData = &charGlyphs[j];"
+            ],
+            [
+                1697,
+                1694,
+                "            if (glyphData->IsSimpleGlyph()) {"
+            ],
+            [
+                1698,
+                1695,
+                "                // If we're in speed mode, don't set up glyph extents here; we'll"
+            ],
+            [
+                1699,
+                1696,
+                "                // just return \"optimistic\" glyph bounds later"
+            ],
+            [
+                1700,
+                1697,
+                "                if (needsGlyphExtents) {"
+            ],
+            [
+                1701,
+                1698,
+                "                    uint32_t glyphIndex = glyphData->GetSimpleGlyph();"
+            ],
+            [
+                1702,
+                1699,
+                "                    if (!extents->IsGlyphKnown(glyphIndex)) {"
+            ],
+            [
+                1703,
+                0,
+                "                        if (!fontIsSetup) {"
+            ],
+            [
+                1704,
+                0,
+                "                            if (!font->SetupCairoFont(aRefDrawTarget)) {"
+            ],
+            [
+                1705,
+                0,
+                "                                NS_WARNING(\"failed to set up font for glyph extents\");"
+            ],
+            [
+                1706,
+                0,
+                "                                break;"
+            ],
+            [
+                1707,
+                0,
+                "                            }"
+            ],
+            [
+                1708,
+                0,
+                "                            fontIsSetup = true;"
+            ],
+            [
+                1709,
+                0,
+                "                        }"
+            ],
+            [
+                1710,
+                1700,
+                "#ifdef DEBUG_TEXT_RUN_STORAGE_METRICS"
+            ],
+            [
+                1711,
+                1701,
+                "                        ++gGlyphExtentsSetupEagerSimple;"
+            ],
+            [
+                1712,
+                1702,
+                "#endif"
+            ],
+            [
+                1713,
+                1703,
+                "                        font->SetupGlyphExtents(aRefDrawTarget,"
+            ],
+            [
+                1714,
+                1704,
+                "                                                glyphIndex, false, extents);"
+            ],
+            [
+                1715,
+                1705,
+                "                    }"
+            ],
+            [
+                1716,
+                1706,
+                "                }"
+            ],
+            [
+                1717,
+                1707,
+                "            } else if (!glyphData->IsMissing()) {"
+            ],
+            [
+                1721,
+                1711,
+                "                }"
+            ],
+            [
+                1722,
+                1712,
+                "                const gfxTextRun::DetailedGlyph *details = GetDetailedGlyphs(j);"
+            ],
+            [
+                1723,
+                1713,
+                "                if (!details) {"
+            ],
+            [
+                1724,
+                1714,
+                "                    continue;"
+            ],
+            [
+                1725,
+                1715,
+                "                }"
+            ],
+            [
+                1726,
+                1716,
+                "                for (uint32_t k = 0; k < glyphCount; ++k, ++details) {"
+            ],
+            [
+                1727,
+                1717,
+                "                    uint32_t glyphIndex = details->mGlyphID;"
+            ],
+            [
+                1728,
+                1718,
+                "                    if (!extents->IsGlyphKnownWithTightExtents(glyphIndex)) {"
+            ],
+            [
+                1729,
+                0,
+                "                        if (!fontIsSetup) {"
+            ],
+            [
+                1730,
+                0,
+                "                            if (!font->SetupCairoFont(aRefDrawTarget)) {"
+            ],
+            [
+                1731,
+                0,
+                "                                NS_WARNING(\"failed to set up font for glyph extents\");"
+            ],
+            [
+                1732,
+                0,
+                "                                break;"
+            ],
+            [
+                1733,
+                0,
+                "                            }"
+            ],
+            [
+                1734,
+                0,
+                "                            fontIsSetup = true;"
+            ],
+            [
+                1735,
+                0,
+                "                        }"
+            ],
+            [
+                1736,
+                1719,
+                "#ifdef DEBUG_TEXT_RUN_STORAGE_METRICS"
+            ],
+            [
+                1737,
+                1720,
+                "                        ++gGlyphExtentsSetupEagerTight;"
+            ],
+            [
+                1738,
+                1721,
+                "#endif"
+            ],
+            [
+                1739,
+                1722,
+                "                        font->SetupGlyphExtents(aRefDrawTarget,"
+            ],
+            [
+                1740,
+                1723,
+                "                                                glyphIndex, true, extents);"
+            ],
+            [
+                1741,
+                1724,
+                "                    }"
+            ],
+            [
+                1742,
+                1725,
+                "                }"
+            ],
+            [
+                1743,
+                1726,
+                "            }"
+            ]
+        ]
+    },
+    {
+        "new": false,
+        "deleted": false,
+        "renamed_from": null,
+        "filename": "layout/reftests/border-radius/reftest.list",
+        "binary": false,
+        "count_add": 1,
+        "count_del": 1,
+        "lines": [
+            [
+                46,
+                46,
+                "fuzzy-if(true,1,20) fuzzy-if(d2d,72,196) fuzzy-if(cocoaWidget,1,180) fuzzy-if(Android,140,237) == clipping-4-canvas.html clipping-4-ref.html # bug 732535"
+            ],
+            [
+                47,
+                47,
+                "fuzzy-if(Android,5,54) fuzzy-if(/^Windows\\x20NT\\x206\\.2/.test(http.oscpu),1,10) fuzzy-if(skiaContent,1,172) == clipping-4-image.html clipping-4-ref.html"
+            ],
+            [
+                48,
+                48,
+                "fuzzy-if(/^Windows\\x20NT\\x206\\.2/.test(http.oscpu),1,10) fuzzy-if(skiaContent,1,77) == clipping-4-overflow-hidden.html clipping-4-ref.html"
+            ],
+            [
+                49,
+                49,
+                "== clipping-5-canvas.html clipping-5-refc.html"
+            ],
+            [
+                50,
+                50,
+                "fuzzy-if(/^Windows\\x20NT\\x206\\.2/.test(http.oscpu),1,5) == clipping-5-image.html clipping-5-refi.html"
+            ],
+            [
+                51,
+                51,
+                "fuzzy-if(/^Windows\\x20NT\\x206\\.2/.test(http.oscpu),1,5) fuzzy-if(skiaContent,1,77) == clipping-5-overflow-hidden.html clipping-5-ref.html"
+            ],
+            [
+                52,
+                52,
+                "fuzzy-if(/^Windows\\x20NT\\x206\\.2/.test(http.oscpu),1,5) fuzzy-if(Android,5,21) fuzzy-if(skiaContent,1,97) == clipping-5-refi.html clipping-5-ref.html"
+            ],
+            [
+                53,
+                53,
+                "fuzzy-if(true,1,7) fuzzy-if(d2d,55,94) fuzzy-if(cocoaWidget,1,99) fuzzy-if(Android,99,115) fuzzy-if(skiaContent,1,77) == clipping-5-refc.html clipping-5-ref.html # bug 732535"
+            ],
+            [
+                54,
+                0,
+                "fuzzy-if(winWidget,105,71) fuzzy-if(Android,8,469) fuzzy-if(skiaContent,7,58) fuzzy-if(d3d11&&advancedLayers,120,319) fuzzy-if(winWidget&&stylo,137,319) == clipping-6.html clipping-6-ref.html # PaintedLayer and MaskLayer with transforms that aren't identical"
+            ],
+            [
+                0,
+                54,
+                "fuzzy-if(winWidget,105,71) fuzzy-if(Android,8,469) fuzzy-if(skiaContent,7,58) fuzzy-if(d3d11&&advancedLayers,120,319) fuzzy-if(winWidget&&stylo,144,319) == clipping-6.html clipping-6-ref.html # PaintedLayer and MaskLayer with transforms that aren't identical"
+            ],
+            [
+                55,
+                55,
+                "fuzzy-if(true,2,29) fuzzy-if(d2d,46,71) fuzzy-if(Android,255,586) fuzzy-if(skiaContent,28,96) == clipping-7.html clipping-7-ref.html # ColorLayer and MaskLayer with transforms that aren't identical. Reference image rendered without using layers (which causes fuzzy failures)."
+            ],
+            [
+                56,
+                56,
+                "fuzzy-if(/^Windows\\x20NT\\x206\\.2/.test(http.oscpu),1,5) == clipping-and-zindex-1.html clipping-and-zindex-1-ref.html"
+            ],
+            [
+                57,
+                57,
+                "fuzzy-if(cocoaWidget,1,4) fuzzy-if(d2d,59,342) fuzzy-if(d3d11&&advancedLayers&&!d2d,30,3) == intersecting-clipping-1-canvas.html intersecting-clipping-1-refc.html"
+            ],
+            [
+                58,
+                58,
+                "== intersecting-clipping-1-image.html intersecting-clipping-1-refi.html"
+            ],
+            [
+                59,
+                59,
+                "== intersecting-clipping-1-overflow-hidden.html intersecting-clipping-1-ref.html"
+            ],
+            [
+                60,
+                60,
+                "fuzzy-if(Android,5,105) fuzzy-if(d2d,1,20) fuzzy-if(skiaContent,1,300) == intersecting-clipping-1-refi.html intersecting-clipping-1-ref.html"
+            ],
+            [
+                61,
+                61,
+                "fuzzy-if(true,1,33) fuzzy-if(d2d,59,350) fuzzy-if(cocoaWidget,1,332) fuzzy-if(Android,124,440) fuzzy-if(skiaContent,1,135) fuzzy-if(d3d11&&advancedLayers,59,353) == intersecting-clipping-1-refc.html intersecting-clipping-1-ref.html # bug 732535"
+            ],
+            [
+                62,
+                62,
+                ""
+            ]
+        ]
+    }
+]

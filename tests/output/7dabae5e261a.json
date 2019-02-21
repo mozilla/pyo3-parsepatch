@@ -1,0 +1,984 @@
+[
+    {
+        "new": false,
+        "deleted": false,
+        "renamed_from": null,
+        "filename": "browser/branding/aurora/content/jar.mn",
+        "binary": false,
+        "count_add": 3,
+        "count_del": 3,
+        "lines": [
+            [
+                3,
+                3,
+                "# file, You can obtain one at http://mozilla.org/MPL/2.0/."
+            ],
+            [
+                4,
+                4,
+                ""
+            ],
+            [
+                5,
+                5,
+                "browser.jar:"
+            ],
+            [
+                6,
+                6,
+                "% content branding %content/branding/ contentaccessible=yes"
+            ],
+            [
+                7,
+                7,
+                "  content/branding/about.png"
+            ],
+            [
+                8,
+                8,
+                "  content/branding/about-logo.png"
+            ],
+            [
+                9,
+                9,
+                "  content/branding/about-logo@2x.png"
+            ],
+            [
+                10,
+                10,
+                "  content/branding/about-wordmark.svg"
+            ],
+            [
+                11,
+                0,
+                "  content/branding/icon48.png"
+            ],
+            [
+                12,
+                0,
+                "  content/branding/icon64.png"
+            ],
+            [
+                13,
+                11,
+                "  content/branding/icon16.png                    (../default16.png)"
+            ],
+            [
+                14,
+                12,
+                "  content/branding/icon32.png                    (../default32.png)"
+            ],
+            [
+                15,
+                0,
+                "  content/branding/icon128.png                   (../mozicon128.png)"
+            ],
+            [
+                0,
+                13,
+                "  content/branding/icon48.png"
+            ],
+            [
+                0,
+                14,
+                "  content/branding/icon64.png                    (../default64.png)"
+            ],
+            [
+                0,
+                15,
+                "  content/branding/icon128.png                   (../default128.png)"
+            ],
+            [
+                16,
+                16,
+                "  content/branding/identity-icons-brand.svg"
+            ],
+            [
+                17,
+                17,
+                "  content/branding/aboutDialog.css"
+            ]
+        ]
+    },
+    {
+        "new": false,
+        "deleted": false,
+        "renamed_from": "browser/branding/aurora/mozicon128.png",
+        "filename": "browser/branding/aurora/default128.png",
+        "binary": false,
+        "count_add": 0,
+        "count_del": 0,
+        "lines": []
+    },
+    {
+        "new": false,
+        "deleted": false,
+        "renamed_from": "browser/branding/aurora/content/icon64.png",
+        "filename": "browser/branding/aurora/default64.png",
+        "binary": false,
+        "count_add": 0,
+        "count_del": 0,
+        "lines": []
+    },
+    {
+        "new": false,
+        "deleted": false,
+        "renamed_from": null,
+        "filename": "browser/branding/branding-common.mozbuild",
+        "binary": false,
+        "count_add": 4,
+        "count_del": 2,
+        "lines": [
+            [
+                37,
+                37,
+                "            'background.png',"
+            ],
+            [
+                38,
+                38,
+                "            'disk.icns',"
+            ],
+            [
+                39,
+                39,
+                "            'document.icns',"
+            ],
+            [
+                40,
+                40,
+                "            'dsstore',"
+            ],
+            [
+                41,
+                41,
+                "            'firefox.icns',"
+            ],
+            [
+                42,
+                42,
+                "        ]"
+            ],
+            [
+                43,
+                43,
+                "    elif 'gtk' in CONFIG['MOZ_WIDGET_TOOLKIT']:"
+            ],
+            [
+                44,
+                44,
+                "        BRANDING_FILES += ["
+            ],
+            [
+                0,
+                45,
+                "            'default128.png',"
+            ],
+            [
+                45,
+                46,
+                "            'default16.png',"
+            ],
+            [
+                46,
+                47,
+                "            'default32.png',"
+            ],
+            [
+                47,
+                48,
+                "            'default48.png',"
+            ],
+            [
+                48,
+                0,
+                "            'mozicon128.png',"
+            ],
+            [
+                0,
+                49,
+                "            'default64.png',"
+            ],
+            [
+                49,
+                50,
+                "        ]"
+            ],
+            [
+                50,
+                0,
+                "        FINAL_TARGET_FILES.icons += ['mozicon128.png']"
+            ],
+            [
+                51,
+                51,
+                "        FINAL_TARGET_FILES.chrome.icons.default += ["
+            ],
+            [
+                0,
+                52,
+                "            'default128.png',"
+            ],
+            [
+                52,
+                53,
+                "            'default16.png',"
+            ],
+            [
+                53,
+                54,
+                "            'default32.png',"
+            ],
+            [
+                54,
+                55,
+                "            'default48.png',"
+            ],
+            [
+                0,
+                56,
+                "            'default64.png',"
+            ],
+            [
+                55,
+                57,
+                "        ]"
+            ]
+        ]
+    },
+    {
+        "new": false,
+        "deleted": false,
+        "renamed_from": null,
+        "filename": "browser/branding/nightly/content/jar.mn",
+        "binary": false,
+        "count_add": 3,
+        "count_del": 3,
+        "lines": [
+            [
+                3,
+                3,
+                "# file, You can obtain one at http://mozilla.org/MPL/2.0/."
+            ],
+            [
+                4,
+                4,
+                ""
+            ],
+            [
+                5,
+                5,
+                "browser.jar:"
+            ],
+            [
+                6,
+                6,
+                "% content branding %content/branding/ contentaccessible=yes"
+            ],
+            [
+                7,
+                7,
+                "  content/branding/about.png"
+            ],
+            [
+                8,
+                8,
+                "  content/branding/about-logo.png"
+            ],
+            [
+                9,
+                9,
+                "  content/branding/about-logo@2x.png"
+            ],
+            [
+                10,
+                10,
+                "  content/branding/about-wordmark.svg"
+            ],
+            [
+                11,
+                0,
+                "  content/branding/icon48.png"
+            ],
+            [
+                12,
+                0,
+                "  content/branding/icon64.png"
+            ],
+            [
+                13,
+                11,
+                "  content/branding/icon16.png                    (../default16.png)"
+            ],
+            [
+                14,
+                12,
+                "  content/branding/icon32.png                    (../default32.png)"
+            ],
+            [
+                15,
+                0,
+                "  content/branding/icon128.png                   (../mozicon128.png)"
+            ],
+            [
+                0,
+                13,
+                "  content/branding/icon48.png"
+            ],
+            [
+                0,
+                14,
+                "  content/branding/icon64.png                    (../default64.png)"
+            ],
+            [
+                0,
+                15,
+                "  content/branding/icon128.png                   (../default128.png)"
+            ],
+            [
+                16,
+                16,
+                "  content/branding/identity-icons-brand.svg"
+            ],
+            [
+                17,
+                17,
+                "  content/branding/aboutDialog.css"
+            ]
+        ]
+    },
+    {
+        "new": false,
+        "deleted": false,
+        "renamed_from": "browser/branding/nightly/mozicon128.png",
+        "filename": "browser/branding/nightly/default128.png",
+        "binary": false,
+        "count_add": 0,
+        "count_del": 0,
+        "lines": []
+    },
+    {
+        "new": false,
+        "deleted": false,
+        "renamed_from": "browser/branding/nightly/content/icon64.png",
+        "filename": "browser/branding/nightly/default64.png",
+        "binary": false,
+        "count_add": 0,
+        "count_del": 0,
+        "lines": []
+    },
+    {
+        "new": false,
+        "deleted": false,
+        "renamed_from": null,
+        "filename": "browser/branding/official/content/jar.mn",
+        "binary": false,
+        "count_add": 2,
+        "count_del": 2,
+        "lines": [
+            [
+                3,
+                3,
+                "# file, You can obtain one at http://mozilla.org/MPL/2.0/."
+            ],
+            [
+                4,
+                4,
+                ""
+            ],
+            [
+                5,
+                5,
+                "browser.jar:"
+            ],
+            [
+                6,
+                6,
+                "% content branding %content/branding/ contentaccessible=yes"
+            ],
+            [
+                7,
+                7,
+                "  content/branding/about.png"
+            ],
+            [
+                8,
+                8,
+                "  content/branding/about-logo.png"
+            ],
+            [
+                9,
+                9,
+                "  content/branding/about-logo@2x.png"
+            ],
+            [
+                10,
+                10,
+                "  content/branding/about-wordmark.svg"
+            ],
+            [
+                11,
+                0,
+                "  content/branding/icon48.png"
+            ],
+            [
+                12,
+                0,
+                "  content/branding/icon64.png"
+            ],
+            [
+                13,
+                11,
+                "  content/branding/icon16.png                    (../default16.png)"
+            ],
+            [
+                14,
+                12,
+                "  content/branding/icon32.png                    (../default32.png)"
+            ],
+            [
+                0,
+                13,
+                "  content/branding/icon48.png"
+            ],
+            [
+                0,
+                14,
+                "  content/branding/icon64.png                    (../default64.png)"
+            ],
+            [
+                15,
+                15,
+                "  content/branding/icon128.png                   (../mozicon128.png)"
+            ],
+            [
+                16,
+                16,
+                "  content/branding/identity-icons-brand.svg"
+            ],
+            [
+                17,
+                17,
+                "  content/branding/aboutDialog.css"
+            ]
+        ]
+    },
+    {
+        "new": false,
+        "deleted": false,
+        "renamed_from": "browser/branding/official/mozicon128.png",
+        "filename": "browser/branding/official/default128.png",
+        "binary": false,
+        "count_add": 0,
+        "count_del": 0,
+        "lines": []
+    },
+    {
+        "new": false,
+        "deleted": false,
+        "renamed_from": "browser/branding/official/content/icon64.png",
+        "filename": "browser/branding/official/default64.png",
+        "binary": false,
+        "count_add": 0,
+        "count_del": 0,
+        "lines": []
+    },
+    {
+        "new": false,
+        "deleted": false,
+        "renamed_from": null,
+        "filename": "browser/branding/unofficial/content/jar.mn",
+        "binary": false,
+        "count_add": 3,
+        "count_del": 3,
+        "lines": [
+            [
+                4,
+                4,
+                ""
+            ],
+            [
+                5,
+                5,
+                "browser.jar:"
+            ],
+            [
+                6,
+                6,
+                "% content branding %content/branding/ contentaccessible=yes"
+            ],
+            [
+                7,
+                7,
+                "  content/branding/about.png"
+            ],
+            [
+                8,
+                8,
+                "  content/branding/about-background.png"
+            ],
+            [
+                9,
+                9,
+                "  content/branding/about-logo.png"
+            ],
+            [
+                10,
+                10,
+                "  content/branding/about-logo@2x.png"
+            ],
+            [
+                11,
+                11,
+                "  content/branding/about-wordmark.svg"
+            ],
+            [
+                12,
+                0,
+                "  content/branding/icon48.png"
+            ],
+            [
+                13,
+                0,
+                "  content/branding/icon64.png"
+            ],
+            [
+                14,
+                12,
+                "  content/branding/icon16.png                    (../default16.png)"
+            ],
+            [
+                15,
+                13,
+                "  content/branding/icon32.png                    (../default32.png)"
+            ],
+            [
+                16,
+                0,
+                "  content/branding/icon128.png                   (../mozicon128.png)"
+            ],
+            [
+                0,
+                14,
+                "  content/branding/icon48.png"
+            ],
+            [
+                0,
+                15,
+                "  content/branding/icon64.png                    (../default64.png)"
+            ],
+            [
+                0,
+                16,
+                "  content/branding/icon128.png                   (../default128.png)"
+            ],
+            [
+                17,
+                17,
+                "  content/branding/identity-icons-brand.svg"
+            ],
+            [
+                18,
+                18,
+                "  content/branding/aboutDialog.css"
+            ]
+        ]
+    },
+    {
+        "new": false,
+        "deleted": false,
+        "renamed_from": "browser/branding/unofficial/mozicon128.png",
+        "filename": "browser/branding/unofficial/default128.png",
+        "binary": false,
+        "count_add": 0,
+        "count_del": 0,
+        "lines": []
+    },
+    {
+        "new": false,
+        "deleted": false,
+        "renamed_from": "browser/branding/unofficial/content/icon64.png",
+        "filename": "browser/branding/unofficial/default64.png",
+        "binary": false,
+        "count_add": 0,
+        "count_del": 0,
+        "lines": []
+    },
+    {
+        "new": false,
+        "deleted": false,
+        "renamed_from": null,
+        "filename": "browser/installer/allowed-dupes.mn",
+        "binary": false,
+        "count_add": 2,
+        "count_del": 1,
+        "lines": [
+            [
+                71,
+                71,
+                "modules/devtools/Loader.jsm"
+            ],
+            [
+                72,
+                72,
+                "modules/devtools/shared/Console.jsm"
+            ],
+            [
+                73,
+                73,
+                "modules/devtools/shared/Loader.jsm"
+            ],
+            [
+                74,
+                74,
+                "browser/modules/devtools/client/framework/gDevTools.jsm"
+            ],
+            [
+                75,
+                75,
+                "browser/modules/devtools/gDevTools.jsm"
+            ],
+            [
+                76,
+                76,
+                "browser/chrome/icons/default/default16.png"
+            ],
+            [
+                77,
+                77,
+                "browser/chrome/icons/default/default32.png"
+            ],
+            [
+                78,
+                78,
+                "browser/chrome/icons/default/default48.png"
+            ],
+            [
+                0,
+                79,
+                "browser/chrome/icons/default/default64.png"
+            ],
+            [
+                0,
+                80,
+                "browser/chrome/icons/default/default128.png"
+            ],
+            [
+                79,
+                81,
+                "browser/chrome/pdfjs/content/web/images/findbarButton-next-rtl.png"
+            ],
+            [
+                80,
+                82,
+                "browser/chrome/pdfjs/content/web/images/findbarButton-next-rtl@2x.png"
+            ],
+            [
+                81,
+                83,
+                "browser/chrome/pdfjs/content/web/images/findbarButton-next.png"
+            ],
+            [
+                82,
+                84,
+                "browser/chrome/pdfjs/content/web/images/findbarButton-next@2x.png"
+            ],
+            [
+                83,
+                85,
+                "browser/chrome/pdfjs/content/web/images/findbarButton-previous-rtl.png"
+            ],
+            [
+                84,
+                86,
+                "browser/chrome/pdfjs/content/web/images/findbarButton-previous-rtl@2x.png"
+            ],
+            [
+                85,
+                87,
+                "browser/chrome/pdfjs/content/web/images/findbarButton-previous.png"
+            ],
+            [
+                86,
+                88,
+                "browser/chrome/pdfjs/content/web/images/findbarButton-previous@2x.png"
+            ],
+            [
+                100,
+                102,
+                "browser/features/flyweb@mozilla.org/chrome/skin/osx/icon-32-anchored.png"
+            ],
+            [
+                101,
+                103,
+                "browser/features/flyweb@mozilla.org/chrome/skin/osx/icon-64-anchored.png"
+            ],
+            [
+                102,
+                104,
+                "browser/features/flyweb@mozilla.org/chrome/skin/windows/flyweb.css"
+            ],
+            [
+                103,
+                105,
+                "browser/features/flyweb@mozilla.org/chrome/skin/windows/icon-16.png"
+            ],
+            [
+                104,
+                106,
+                "browser/features/flyweb@mozilla.org/chrome/skin/windows/icon-32-anchored.png"
+            ],
+            [
+                105,
+                107,
+                "browser/features/flyweb@mozilla.org/chrome/skin/windows/icon-32.png"
+            ],
+            [
+                106,
+                108,
+                "browser/features/flyweb@mozilla.org/chrome/skin/windows/icon-64-anchored.png"
+            ],
+            [
+                107,
+                109,
+                "browser/features/flyweb@mozilla.org/chrome/skin/windows/icon-64.png"
+            ],
+            [
+                108,
+                0,
+                "browser/icons/mozicon128.png"
+            ],
+            [
+                109,
+                110,
+                "chrome.manifest"
+            ],
+            [
+                110,
+                111,
+                "chrome/toolkit/skin/classic/global/autocomplete.css"
+            ],
+            [
+                111,
+                112,
+                "chrome/toolkit/skin/classic/global/button.css"
+            ],
+            [
+                112,
+                113,
+                "chrome/toolkit/skin/classic/global/checkbox.css"
+            ],
+            [
+                113,
+                114,
+                "chrome/toolkit/skin/classic/global/dialog.css"
+            ],
+            [
+                114,
+                115,
+                "chrome/toolkit/skin/classic/global/dropmarker.css"
+            ],
+            [
+                115,
+                116,
+                "chrome/toolkit/skin/classic/global/global.css"
+            ],
+            [
+                116,
+                117,
+                "chrome/toolkit/skin/classic/global/groupbox.css"
+            ]
+        ]
+    },
+    {
+        "new": false,
+        "deleted": false,
+        "renamed_from": null,
+        "filename": "browser/installer/package-manifest.in",
+        "binary": false,
+        "count_add": 2,
+        "count_del": 2,
+        "lines": [
+            [
+                610,
+                610,
+                "@RESPATH@/chrome/toolkit@JAREXT@"
+            ],
+            [
+                611,
+                611,
+                "@RESPATH@/chrome/toolkit.manifest"
+            ],
+            [
+                612,
+                612,
+                "@RESPATH@/chrome/recording.manifest"
+            ],
+            [
+                613,
+                613,
+                "@RESPATH@/chrome/recording/*"
+            ],
+            [
+                614,
+                614,
+                "#ifdef MOZ_GTK"
+            ],
+            [
+                615,
+                615,
+                "@RESPATH@/browser/chrome/icons/default/default16.png"
+            ],
+            [
+                616,
+                616,
+                "@RESPATH@/browser/chrome/icons/default/default32.png"
+            ],
+            [
+                617,
+                617,
+                "@RESPATH@/browser/chrome/icons/default/default48.png"
+            ],
+            [
+                0,
+                618,
+                "@RESPATH@/browser/chrome/icons/default/default64.png"
+            ],
+            [
+                0,
+                619,
+                "@RESPATH@/browser/chrome/icons/default/default128.png"
+            ],
+            [
+                618,
+                620,
+                "#endif"
+            ],
+            [
+                619,
+                621,
+                "@RESPATH@/browser/features/*"
+            ],
+            [
+                620,
+                622,
+                ""
+            ],
+            [
+                621,
+                623,
+                "; [Webide Files]"
+            ],
+            [
+                622,
+                624,
+                "@RESPATH@/browser/chrome/webide@JAREXT@"
+            ],
+            [
+                623,
+                625,
+                "@RESPATH@/browser/chrome/webide.manifest"
+            ],
+            [
+                624,
+                626,
+                "@RESPATH@/browser/@PREF_DIR@/webide-prefs.js"
+            ],
+            [
+                625,
+                627,
+                ""
+            ],
+            [
+                632,
+                634,
+                "@RESPATH@/browser/chrome/devtools@JAREXT@"
+            ],
+            [
+                633,
+                635,
+                "@RESPATH@/browser/chrome/devtools.manifest"
+            ],
+            [
+                634,
+                636,
+                "@RESPATH@/browser/@PREF_DIR@/devtools.js"
+            ],
+            [
+                635,
+                637,
+                "@RESPATH@/browser/@PREF_DIR@/debugger.js"
+            ],
+            [
+                636,
+                638,
+                ""
+            ],
+            [
+                637,
+                639,
+                "; shell icons"
+            ],
+            [
+                638,
+                640,
+                "#ifdef XP_UNIX"
+            ],
+            [
+                639,
+                641,
+                "#ifndef XP_MACOSX"
+            ],
+            [
+                640,
+                0,
+                "; shell icons"
+            ],
+            [
+                641,
+                0,
+                "@RESPATH@/browser/icons/*.png"
+            ],
+            [
+                642,
+                642,
+                "#ifdef MOZ_UPDATER"
+            ],
+            [
+                643,
+                643,
+                "; updater icon"
+            ],
+            [
+                644,
+                644,
+                "@RESPATH@/icons/updater.png"
+            ],
+            [
+                645,
+                645,
+                "#endif"
+            ],
+            [
+                646,
+                646,
+                "#endif"
+            ],
+            [
+                647,
+                647,
+                "#endif"
+            ],
+            [
+                648,
+                648,
+                ""
+            ],
+            [
+                649,
+                649,
+                "; [Default Preferences]"
+            ]
+        ]
+    }
+]

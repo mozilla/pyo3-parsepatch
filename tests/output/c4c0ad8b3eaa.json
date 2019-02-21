@@ -1,0 +1,4529 @@
+[
+    {
+        "new": false,
+        "deleted": false,
+        "renamed_from": null,
+        "filename": "gfx/layers/apz/public/IAPZCTreeManager.h",
+        "binary": false,
+        "count_add": 1,
+        "count_del": 1,
+        "lines": [
+            [
+                6,
+                6,
+                ""
+            ],
+            [
+                7,
+                7,
+                "#ifndef mozilla_layers_IAPZCTreeManager_h"
+            ],
+            [
+                8,
+                8,
+                "#define mozilla_layers_IAPZCTreeManager_h"
+            ],
+            [
+                9,
+                9,
+                ""
+            ],
+            [
+                10,
+                10,
+                "#include <stdint.h>                     // for uint64_t, uint32_t"
+            ],
+            [
+                11,
+                11,
+                ""
+            ],
+            [
+                12,
+                12,
+                "#include \"FrameMetrics.h\"               // for FrameMetrics, etc"
+            ],
+            [
+                13,
+                13,
+                "#include \"mozilla/EventForwards.h\"      // for WidgetInputEvent, nsEventStatus"
+            ],
+            [
+                14,
+                0,
+                "#include \"mozilla/layers/APZUtils.h\"    // for HitTestResult"
+            ],
+            [
+                0,
+                14,
+                "#include \"mozilla/layers/APZUtils.h\"    // for TouchBehaviorFlags, etc"
+            ],
+            [
+                15,
+                15,
+                "#include \"nsTArrayForwardDeclare.h\"     // for nsTArray, nsTArray_Impl, etc"
+            ],
+            [
+                16,
+                16,
+                "#include \"nsISupportsImpl.h\"            // for MOZ_COUNT_CTOR, etc"
+            ],
+            [
+                17,
+                17,
+                "#include \"Units.h\"                      // for CSSPoint, CSSRect, etc"
+            ],
+            [
+                18,
+                18,
+                ""
+            ],
+            [
+                19,
+                19,
+                "namespace mozilla {"
+            ],
+            [
+                20,
+                20,
+                "class InputData;"
+            ],
+            [
+                21,
+                21,
+                ""
+            ],
+            [
+                22,
+                22,
+                "namespace layers {"
+            ]
+        ]
+    },
+    {
+        "new": false,
+        "deleted": false,
+        "renamed_from": null,
+        "filename": "gfx/layers/apz/src/APZCTreeManager.cpp",
+        "binary": false,
+        "count_add": 83,
+        "count_del": 94,
+        "lines": [
+            [
+                52,
+                52,
+                "#endif"
+            ],
+            [
+                53,
+                53,
+                ""
+            ],
+            [
+                54,
+                54,
+                "// #define APZ_KEY_LOG(...) printf_stderr(\"APZKEY: \" __VA_ARGS__)"
+            ],
+            [
+                55,
+                55,
+                "#define APZ_KEY_LOG(...)"
+            ],
+            [
+                56,
+                56,
+                ""
+            ],
+            [
+                57,
+                57,
+                "namespace mozilla {"
+            ],
+            [
+                58,
+                58,
+                "namespace layers {"
+            ],
+            [
+                59,
+                59,
+                ""
+            ],
+            [
+                0,
+                60,
+                "using mozilla::gfx::CompositorHitTestInfo;"
+            ],
+            [
+                0,
+                61,
+                ""
+            ],
+            [
+                60,
+                62,
+                "typedef mozilla::gfx::Point Point;"
+            ],
+            [
+                61,
+                63,
+                "typedef mozilla::gfx::Point4D Point4D;"
+            ],
+            [
+                62,
+                64,
+                "typedef mozilla::gfx::Matrix4x4 Matrix4x4;"
+            ],
+            [
+                63,
+                65,
+                ""
+            ],
+            [
+                64,
+                66,
+                "typedef CompositorBridgeParent::LayerTreeState LayerTreeState;"
+            ],
+            [
+                65,
+                67,
+                ""
+            ],
+            [
+                66,
+                68,
+                "float APZCTreeManager::sDPI = 160.0;"
+            ],
+            [
+                67,
+                69,
+                ""
+            ],
+            [
+                216,
+                218,
+                "  return AsyncPanZoomController::CalculatePendingDisplayPort("
+            ],
+            [
+                217,
+                219,
+                "    aFrameMetrics, aVelocity);"
+            ],
+            [
+                218,
+                220,
+                "}"
+            ],
+            [
+                219,
+                221,
+                ""
+            ],
+            [
+                220,
+                222,
+                "APZCTreeManager::APZCTreeManager(uint64_t aRootLayersId)"
+            ],
+            [
+                221,
+                223,
+                "    : mInputQueue(new InputQueue()),"
+            ],
+            [
+                222,
+                224,
+                "      mRootLayersId(aRootLayersId),"
+            ],
+            [
+                223,
+                225,
+                "      mTreeLock(\"APZCTreeLock\"),"
+            ],
+            [
+                224,
+                0,
+                "      mHitResultForInputBlock(HitNothing),"
+            ],
+            [
+                0,
+                226,
+                "      mHitResultForInputBlock(CompositorHitTestInfo::eInvisibleToHitTest),"
+            ],
+            [
+                225,
+                227,
+                "      mRetainedTouchIdentifier(-1),"
+            ],
+            [
+                226,
+                228,
+                "      mInScrollbarTouchDrag(false),"
+            ],
+            [
+                227,
+                229,
+                "      mApzcTreeLog(\"apzctree\")"
+            ],
+            [
+                228,
+                230,
+                "{"
+            ],
+            [
+                229,
+                231,
+                "  RefPtr<APZCTreeManager> self(this);"
+            ],
+            [
+                230,
+                232,
+                "  NS_DispatchToMainThread("
+            ],
+            [
+                231,
+                233,
+                "    NS_NewRunnableFunction(\"layers::APZCTreeManager::APZCTreeManager\", [self] {"
+            ],
+            [
+                232,
+                234,
+                "      self->mFlushObserver = new CheckerboardFlushObserver(self);"
+            ],
+            [
+                1015,
+                1017,
+                "#endif // (MOZ_WIDGET_ANDROID)"
+            ],
+            [
+                1016,
+                1018,
+                ""
+            ],
+            [
+                1017,
+                1019,
+                "  // Initialize aOutInputBlockId to a sane value, and then later we overwrite"
+            ],
+            [
+                1018,
+                1020,
+                "  // it if the input event goes into a block."
+            ],
+            [
+                1019,
+                1021,
+                "  if (aOutInputBlockId) {"
+            ],
+            [
+                1020,
+                1022,
+                "    *aOutInputBlockId = InputBlockState::NO_BLOCK_ID;"
+            ],
+            [
+                1021,
+                1023,
+                "  }"
+            ],
+            [
+                1022,
+                1024,
+                "  nsEventStatus result = nsEventStatus_eIgnore;"
+            ],
+            [
+                1023,
+                0,
+                "  HitTestResult hitResult = HitNothing;"
+            ],
+            [
+                0,
+                1025,
+                "  CompositorHitTestInfo hitResult = CompositorHitTestInfo::eInvisibleToHitTest;"
+            ],
+            [
+                1024,
+                1026,
+                "  switch (aEvent.mInputType) {"
+            ],
+            [
+                1025,
+                1027,
+                "    case MULTITOUCH_INPUT: {"
+            ],
+            [
+                1026,
+                1028,
+                "      MultiTouchInput& touchInput = aEvent.AsMultiTouchInput();"
+            ],
+            [
+                1027,
+                1029,
+                "      result = ProcessTouchInput(touchInput, aOutTargetGuid, aOutInputBlockId);"
+            ],
+            [
+                1028,
+                1030,
+                "      break;"
+            ],
+            [
+                1029,
+                1031,
+                "    } case MOUSE_INPUT: {"
+            ],
+            [
+                1030,
+                1032,
+                "      MouseInput& mouseInput = aEvent.AsMouseInput();"
+            ],
+            [
+                1031,
+                1033,
+                "      mouseInput.mHandledByAPZ = true;"
+            ],
+            [
+                1051,
+                1053,
+                "      { // scope lock"
+            ],
+            [
+                1052,
+                1054,
+                "        MutexAutoLock lock(mTreeLock);"
+            ],
+            [
+                1053,
+                1055,
+                "        if (!apzc && mRootNode) {"
+            ],
+            [
+                1054,
+                1056,
+                "          apzc = mRootNode->GetApzc();"
+            ],
+            [
+                1055,
+                1057,
+                "        }"
+            ],
+            [
+                1056,
+                1058,
+                "      }"
+            ],
+            [
+                1057,
+                1059,
+                ""
+            ],
+            [
+                1058,
+                1060,
+                "      if (apzc) {"
+            ],
+            [
+                1059,
+                0,
+                "        bool targetConfirmed = (hitResult != HitNothing && hitResult != HitDispatchToContentRegion);"
+            ],
+            [
+                0,
+                1061,
+                "        bool targetConfirmed = (hitResult != CompositorHitTestInfo::eInvisibleToHitTest)"
+            ],
+            [
+                0,
+                1062,
+                "                            && !(hitResult & CompositorHitTestInfo::eDispatchToContent);"
+            ],
+            [
+                1060,
+                1063,
+                "        bool apzDragEnabled = gfxPrefs::APZDragEnabled();"
+            ],
+            [
+                1061,
+                1064,
+                "        if (apzDragEnabled && hitScrollbar) {"
+            ],
+            [
+                1062,
+                1065,
+                "          // If scrollbar dragging is enabled and we hit a scrollbar, wait"
+            ],
+            [
+                1063,
+                1066,
+                "          // for the main-thread confirmation because it contains drag metrics"
+            ],
+            [
+                1064,
+                1067,
+                "          // that we need."
+            ],
+            [
+                1065,
+                1068,
+                "          targetConfirmed = false;"
+            ],
+            [
+                1066,
+                1069,
+                "        }"
+            ],
+            [
+                1067,
+                1070,
+                "        result = mInputQueue->ReceiveInputEvent("
+            ],
+            [
+                1114,
+                1117,
+                "      wheelInput.mHandledByAPZ = WillHandleInput(wheelInput);"
+            ],
+            [
+                1115,
+                1118,
+                "      if (!wheelInput.mHandledByAPZ) {"
+            ],
+            [
+                1116,
+                1119,
+                "        return result;"
+            ],
+            [
+                1117,
+                1120,
+                "      }"
+            ],
+            [
+                1118,
+                1121,
+                ""
+            ],
+            [
+                1119,
+                1122,
+                "      RefPtr<AsyncPanZoomController> apzc = GetTargetAPZC(wheelInput.mOrigin,"
+            ],
+            [
+                1120,
+                1123,
+                "                                                            &hitResult);"
+            ],
+            [
+                1121,
+                1124,
+                "      if (apzc) {"
+            ],
+            [
+                1122,
+                0,
+                "        MOZ_ASSERT(hitResult != HitNothing);"
+            ],
+            [
+                0,
+                1125,
+                "        MOZ_ASSERT(hitResult != CompositorHitTestInfo::eInvisibleToHitTest);"
+            ],
+            [
+                1123,
+                1126,
+                ""
+            ],
+            [
+                1124,
+                1127,
+                "        // For wheel events, the call to ReceiveInputEvent below may result in"
+            ],
+            [
+                1125,
+                1128,
+                "        // scrolling, which changes the async transform. However, the event we"
+            ],
+            [
+                1126,
+                1129,
+                "        // want to pass to gecko should be the pre-scroll event coordinates,"
+            ],
+            [
+                1127,
+                1130,
+                "        // transformed into the gecko space. (pre-scroll because the mouse"
+            ],
+            [
+                1128,
+                1131,
+                "        // cursor is stationary during wheel scrolling, unlike touchmove"
+            ],
+            [
+                1129,
+                1132,
+                "        // events). Since we just flushed the pending repaints the transform to"
+            ],
+            [
+                1130,
+                1133,
+                "        // gecko space should only consist of overscroll-cancelling transforms."
+            ],
+            [
+                1134,
+                1137,
+                "          transformToGecko, wheelInput.mOrigin);"
+            ],
+            [
+                1135,
+                1138,
+                ""
+            ],
+            [
+                1136,
+                1139,
+                "        if (!untransformedOrigin) {"
+            ],
+            [
+                1137,
+                1140,
+                "          return result;"
+            ],
+            [
+                1138,
+                1141,
+                "        }"
+            ],
+            [
+                1139,
+                1142,
+                ""
+            ],
+            [
+                1140,
+                1143,
+                "        result = mInputQueue->ReceiveInputEvent("
+            ],
+            [
+                1141,
+                1144,
+                "          apzc,"
+            ],
+            [
+                1142,
+                0,
+                "          /* aTargetConfirmed = */ hitResult != HitDispatchToContentRegion,"
+            ],
+            [
+                0,
+                1145,
+                "          /* aTargetConfirmed = */ !(hitResult & CompositorHitTestInfo::eDispatchToContent),"
+            ],
+            [
+                1143,
+                1146,
+                "          wheelInput, aOutInputBlockId);"
+            ],
+            [
+                1144,
+                1147,
+                ""
+            ],
+            [
+                1145,
+                1148,
+                "        // Update the out-parameters so they are what the caller expects."
+            ],
+            [
+                1146,
+                1149,
+                "        apzc->GetGuid(aOutTargetGuid);"
+            ],
+            [
+                1147,
+                1150,
+                "        wheelInput.mOrigin = *untransformedOrigin;"
+            ],
+            [
+                1148,
+                1151,
+                "      }"
+            ],
+            [
+                1149,
+                1152,
+                "      break;"
+            ],
+            [
+                1150,
+                1153,
+                "    } case PANGESTURE_INPUT: {"
+            ],
+            [
+                1164,
+                1167,
+                "      WidgetWheelEvent wheelEvent = panInput.ToWidgetWheelEvent(nullptr);"
+            ],
+            [
+                1165,
+                1168,
+                "      EventStateManager::GetUserPrefsForWheelEvent(&wheelEvent,"
+            ],
+            [
+                1166,
+                1169,
+                "        &panInput.mUserDeltaMultiplierX,"
+            ],
+            [
+                1167,
+                1170,
+                "        &panInput.mUserDeltaMultiplierY);"
+            ],
+            [
+                1168,
+                1171,
+                ""
+            ],
+            [
+                1169,
+                1172,
+                "      RefPtr<AsyncPanZoomController> apzc = GetTargetAPZC(panInput.mPanStartPoint,"
+            ],
+            [
+                1170,
+                1173,
+                "                                                            &hitResult);"
+            ],
+            [
+                1171,
+                1174,
+                "      if (apzc) {"
+            ],
+            [
+                1172,
+                0,
+                "        MOZ_ASSERT(hitResult != HitNothing);"
+            ],
+            [
+                0,
+                1175,
+                "        MOZ_ASSERT(hitResult != CompositorHitTestInfo::eInvisibleToHitTest);"
+            ],
+            [
+                1173,
+                1176,
+                ""
+            ],
+            [
+                1174,
+                1177,
+                "        // For pan gesture events, the call to ReceiveInputEvent below may result in"
+            ],
+            [
+                1175,
+                1178,
+                "        // scrolling, which changes the async transform. However, the event we"
+            ],
+            [
+                1176,
+                1179,
+                "        // want to pass to gecko should be the pre-scroll event coordinates,"
+            ],
+            [
+                1177,
+                1180,
+                "        // transformed into the gecko space. (pre-scroll because the mouse"
+            ],
+            [
+                1178,
+                1181,
+                "        // cursor is stationary during pan gesture scrolling, unlike touchmove"
+            ],
+            [
+                1179,
+                1182,
+                "        // events). Since we just flushed the pending repaints the transform to"
+            ],
+            [
+                1180,
+                1183,
+                "        // gecko space should only consist of overscroll-cancelling transforms."
+            ],
+            [
+                1186,
+                1189,
+                "            transformToGecko, panInput.mPanDisplacement, panInput.mPanStartPoint);"
+            ],
+            [
+                1187,
+                1190,
+                ""
+            ],
+            [
+                1188,
+                1191,
+                "        if (!untransformedStartPoint || !untransformedDisplacement) {"
+            ],
+            [
+                1189,
+                1192,
+                "          return result;"
+            ],
+            [
+                1190,
+                1193,
+                "        }"
+            ],
+            [
+                1191,
+                1194,
+                ""
+            ],
+            [
+                1192,
+                1195,
+                "        result = mInputQueue->ReceiveInputEvent("
+            ],
+            [
+                1193,
+                1196,
+                "            apzc,"
+            ],
+            [
+                1194,
+                0,
+                "            /* aTargetConfirmed = */ hitResult != HitDispatchToContentRegion,"
+            ],
+            [
+                0,
+                1197,
+                "            /* aTargetConfirmed = */ !(hitResult & CompositorHitTestInfo::eDispatchToContent),"
+            ],
+            [
+                1195,
+                1198,
+                "            panInput, aOutInputBlockId);"
+            ],
+            [
+                1196,
+                1199,
+                ""
+            ],
+            [
+                1197,
+                1200,
+                "        // Update the out-parameters so they are what the caller expects."
+            ],
+            [
+                1198,
+                1201,
+                "        apzc->GetGuid(aOutTargetGuid);"
+            ],
+            [
+                1199,
+                1202,
+                "        panInput.mPanStartPoint = *untransformedStartPoint;"
+            ],
+            [
+                1200,
+                1203,
+                "        panInput.mPanDisplacement = *untransformedDisplacement;"
+            ],
+            [
+                1201,
+                1204,
+                ""
+            ],
+            [
+                1202,
+                1205,
+                "        panInput.mOverscrollBehaviorAllowsSwipe ="
+            ],
+            [
+                1203,
+                1206,
+                "            apzc->OverscrollBehaviorAllowsSwipe();"
+            ],
+            [
+                1204,
+                1207,
+                "      }"
+            ],
+            [
+                1205,
+                1208,
+                "      break;"
+            ],
+            [
+                1206,
+                1209,
+                "    } case PINCHGESTURE_INPUT: {  // note: no one currently sends these"
+            ],
+            [
+                1207,
+                1210,
+                "      PinchGestureInput& pinchInput = aEvent.AsPinchGestureInput();"
+            ],
+            [
+                1208,
+                1211,
+                "      RefPtr<AsyncPanZoomController> apzc = GetTargetAPZC(pinchInput.mFocusPoint,"
+            ],
+            [
+                1209,
+                1212,
+                "                                                            &hitResult);"
+            ],
+            [
+                1210,
+                1213,
+                "      if (apzc) {"
+            ],
+            [
+                1211,
+                0,
+                "        MOZ_ASSERT(hitResult != HitNothing);"
+            ],
+            [
+                0,
+                1214,
+                "        MOZ_ASSERT(hitResult != CompositorHitTestInfo::eInvisibleToHitTest);"
+            ],
+            [
+                1212,
+                1215,
+                ""
+            ],
+            [
+                1213,
+                1216,
+                "        ScreenToScreenMatrix4x4 outTransform = GetScreenToApzcTransform(apzc)"
+            ],
+            [
+                1214,
+                1217,
+                "                                             * GetApzcToGeckoTransform(apzc);"
+            ],
+            [
+                1215,
+                1218,
+                "        Maybe<ScreenPoint> untransformedFocusPoint = UntransformBy("
+            ],
+            [
+                1216,
+                1219,
+                "          outTransform, pinchInput.mFocusPoint);"
+            ],
+            [
+                1217,
+                1220,
+                ""
+            ],
+            [
+                1218,
+                1221,
+                "        if (!untransformedFocusPoint) {"
+            ],
+            [
+                1219,
+                1222,
+                "          return result;"
+            ],
+            [
+                1220,
+                1223,
+                "        }"
+            ],
+            [
+                1221,
+                1224,
+                ""
+            ],
+            [
+                1222,
+                1225,
+                "        result = mInputQueue->ReceiveInputEvent("
+            ],
+            [
+                1223,
+                1226,
+                "            apzc,"
+            ],
+            [
+                1224,
+                0,
+                "            /* aTargetConfirmed = */ hitResult != HitDispatchToContentRegion,"
+            ],
+            [
+                0,
+                1227,
+                "            /* aTargetConfirmed = */ !(hitResult & CompositorHitTestInfo::eDispatchToContent),"
+            ],
+            [
+                1225,
+                1228,
+                "            pinchInput, aOutInputBlockId);"
+            ],
+            [
+                1226,
+                1229,
+                ""
+            ],
+            [
+                1227,
+                1230,
+                "        // Update the out-parameters so they are what the caller expects."
+            ],
+            [
+                1228,
+                1231,
+                "        apzc->GetGuid(aOutTargetGuid);"
+            ],
+            [
+                1229,
+                1232,
+                "        pinchInput.mFocusPoint = *untransformedFocusPoint;"
+            ],
+            [
+                1230,
+                1233,
+                "      }"
+            ],
+            [
+                1231,
+                1234,
+                "      break;"
+            ],
+            [
+                1232,
+                1235,
+                "    } case TAPGESTURE_INPUT: {  // note: no one currently sends these"
+            ],
+            [
+                1233,
+                1236,
+                "      TapGestureInput& tapInput = aEvent.AsTapGestureInput();"
+            ],
+            [
+                1234,
+                1237,
+                "      RefPtr<AsyncPanZoomController> apzc = GetTargetAPZC(tapInput.mPoint,"
+            ],
+            [
+                1235,
+                1238,
+                "                                                            &hitResult);"
+            ],
+            [
+                1236,
+                1239,
+                "      if (apzc) {"
+            ],
+            [
+                1237,
+                0,
+                "        MOZ_ASSERT(hitResult != HitNothing);"
+            ],
+            [
+                0,
+                1240,
+                "        MOZ_ASSERT(hitResult != CompositorHitTestInfo::eInvisibleToHitTest);"
+            ],
+            [
+                1238,
+                1241,
+                ""
+            ],
+            [
+                1239,
+                1242,
+                "        ScreenToScreenMatrix4x4 outTransform = GetScreenToApzcTransform(apzc)"
+            ],
+            [
+                1240,
+                1243,
+                "                                             * GetApzcToGeckoTransform(apzc);"
+            ],
+            [
+                1241,
+                1244,
+                "        Maybe<ScreenIntPoint> untransformedPoint ="
+            ],
+            [
+                1242,
+                1245,
+                "          UntransformBy(outTransform, tapInput.mPoint);"
+            ],
+            [
+                1243,
+                1246,
+                ""
+            ],
+            [
+                1244,
+                1247,
+                "        if (!untransformedPoint) {"
+            ],
+            [
+                1245,
+                1248,
+                "          return result;"
+            ],
+            [
+                1246,
+                1249,
+                "        }"
+            ],
+            [
+                1247,
+                1250,
+                ""
+            ],
+            [
+                1248,
+                1251,
+                "        result = mInputQueue->ReceiveInputEvent("
+            ],
+            [
+                1249,
+                1252,
+                "            apzc,"
+            ],
+            [
+                1250,
+                0,
+                "            /* aTargetConfirmed = */ hitResult != HitDispatchToContentRegion,"
+            ],
+            [
+                0,
+                1253,
+                "            /* aTargetConfirmed = */ !(hitResult & CompositorHitTestInfo::eDispatchToContent),"
+            ],
+            [
+                1251,
+                1254,
+                "            tapInput, aOutInputBlockId);"
+            ],
+            [
+                1252,
+                1255,
+                ""
+            ],
+            [
+                1253,
+                1256,
+                "        // Update the out-parameters so they are what the caller expects."
+            ],
+            [
+                1254,
+                1257,
+                "        apzc->GetGuid(aOutTargetGuid);"
+            ],
+            [
+                1255,
+                1258,
+                "        tapInput.mPoint = *untransformedPoint;"
+            ],
+            [
+                1256,
+                1259,
+                "      }"
+            ],
+            [
+                1257,
+                1260,
+                "      break;"
+            ],
+            [
+                1258,
+                1261,
+                "    } case KEYBOARD_INPUT: {"
+            ],
+            [
+                1344,
+                1347,
+                ""
+            ],
+            [
+                1345,
+                1348,
+                "      break;"
+            ],
+            [
+                1346,
+                1349,
+                "    }"
+            ],
+            [
+                1347,
+                1350,
+                "  }"
+            ],
+            [
+                1348,
+                1351,
+                "  return result;"
+            ],
+            [
+                1349,
+                1352,
+                "}"
+            ],
+            [
+                1350,
+                1353,
+                ""
+            ],
+            [
+                1351,
+                1354,
+                "static TouchBehaviorFlags"
+            ],
+            [
+                1352,
+                0,
+                "ConvertToTouchBehavior(HitTestResult result)"
+            ],
+            [
+                0,
+                1355,
+                "ConvertToTouchBehavior(CompositorHitTestInfo info)"
+            ],
+            [
+                1353,
+                1356,
+                "{"
+            ],
+            [
+                1354,
+                0,
+                "  switch (result) {"
+            ],
+            [
+                1355,
+                0,
+                "    case HitNothing:"
+            ],
+            [
+                1356,
+                0,
+                "      return AllowedTouchBehavior::NONE;"
+            ],
+            [
+                1357,
+                0,
+                "    case HitLayer:"
+            ],
+            [
+                1358,
+                0,
+                "      return AllowedTouchBehavior::VERTICAL_PAN"
+            ],
+            [
+                0,
+                1357,
+                "  TouchBehaviorFlags result = AllowedTouchBehavior::UNKNOWN;"
+            ],
+            [
+                0,
+                1358,
+                "  if (info == CompositorHitTestInfo::eInvisibleToHitTest) {"
+            ],
+            [
+                0,
+                1359,
+                "    result = AllowedTouchBehavior::NONE;"
+            ],
+            [
+                0,
+                1360,
+                "  } else if (info & CompositorHitTestInfo::eDispatchToContent) {"
+            ],
+            [
+                0,
+                1361,
+                "    result = AllowedTouchBehavior::UNKNOWN;"
+            ],
+            [
+                0,
+                1362,
+                "  } else {"
+            ],
+            [
+                0,
+                1363,
+                "    result = AllowedTouchBehavior::VERTICAL_PAN"
+            ],
+            [
+                1359,
+                1364,
+                "           | AllowedTouchBehavior::HORIZONTAL_PAN"
+            ],
+            [
+                1360,
+                1365,
+                "           | AllowedTouchBehavior::PINCH_ZOOM"
+            ],
+            [
+                1361,
+                1366,
+                "           | AllowedTouchBehavior::DOUBLE_TAP_ZOOM;"
+            ],
+            [
+                1362,
+                0,
+                "    case HitLayerTouchActionNone:"
+            ],
+            [
+                1363,
+                0,
+                "      return AllowedTouchBehavior::NONE;"
+            ],
+            [
+                1364,
+                0,
+                "    case HitLayerTouchActionPanX:"
+            ],
+            [
+                1365,
+                0,
+                "      return AllowedTouchBehavior::HORIZONTAL_PAN;"
+            ],
+            [
+                1366,
+                0,
+                "    case HitLayerTouchActionPanY:"
+            ],
+            [
+                1367,
+                0,
+                "      return AllowedTouchBehavior::VERTICAL_PAN;"
+            ],
+            [
+                1368,
+                0,
+                "    case HitLayerTouchActionPanXY:"
+            ],
+            [
+                1369,
+                0,
+                "      return AllowedTouchBehavior::HORIZONTAL_PAN"
+            ],
+            [
+                1370,
+                0,
+                "           | AllowedTouchBehavior::VERTICAL_PAN;"
+            ],
+            [
+                1371,
+                0,
+                "    case HitDispatchToContentRegion:"
+            ],
+            [
+                1372,
+                0,
+                "      return AllowedTouchBehavior::UNKNOWN;"
+            ],
+            [
+                0,
+                1367,
+                "    if (info & CompositorHitTestInfo::eTouchActionPanXDisabled) {"
+            ],
+            [
+                0,
+                1368,
+                "      result &= ~AllowedTouchBehavior::HORIZONTAL_PAN;"
+            ],
+            [
+                0,
+                1369,
+                "    }"
+            ],
+            [
+                0,
+                1370,
+                "    if (info & CompositorHitTestInfo::eTouchActionPanYDisabled) {"
+            ],
+            [
+                0,
+                1371,
+                "      result &= ~AllowedTouchBehavior::VERTICAL_PAN;"
+            ],
+            [
+                0,
+                1372,
+                "    }"
+            ],
+            [
+                0,
+                1373,
+                "    if (info & CompositorHitTestInfo::eTouchActionPinchZoomDisabled) {"
+            ],
+            [
+                0,
+                1374,
+                "      result &= ~AllowedTouchBehavior::PINCH_ZOOM;"
+            ],
+            [
+                0,
+                1375,
+                "    }"
+            ],
+            [
+                0,
+                1376,
+                "    if (info & CompositorHitTestInfo::eTouchActionDoubleTapZoomDisabled) {"
+            ],
+            [
+                0,
+                1377,
+                "      result &= ~AllowedTouchBehavior::DOUBLE_TAP_ZOOM;"
+            ],
+            [
+                0,
+                1378,
+                "    }"
+            ],
+            [
+                1373,
+                1379,
+                "  }"
+            ],
+            [
+                1374,
+                0,
+                "  MOZ_ASSERT_UNREACHABLE(\"Invalid value\");"
+            ],
+            [
+                1375,
+                0,
+                "  return AllowedTouchBehavior::UNKNOWN;"
+            ],
+            [
+                0,
+                1380,
+                "  return result;"
+            ],
+            [
+                1376,
+                1381,
+                "}"
+            ],
+            [
+                1377,
+                1382,
+                ""
+            ],
+            [
+                1378,
+                1383,
+                "already_AddRefed<AsyncPanZoomController>"
+            ],
+            [
+                1379,
+                1384,
+                "APZCTreeManager::GetTouchInputBlockAPZC(const MultiTouchInput& aEvent,"
+            ],
+            [
+                1380,
+                1385,
+                "                                        nsTArray<TouchBehaviorFlags>* aOutTouchBehaviors,"
+            ],
+            [
+                1381,
+                0,
+                "                                        HitTestResult* aOutHitResult,"
+            ],
+            [
+                0,
+                1386,
+                "                                        CompositorHitTestInfo* aOutHitResult,"
+            ],
+            [
+                1382,
+                1387,
+                "                                        RefPtr<HitTestingTreeNode>* aOutHitScrollbarNode)"
+            ],
+            [
+                1383,
+                1388,
+                "{"
+            ],
+            [
+                1384,
+                1389,
+                "  RefPtr<AsyncPanZoomController> apzc;"
+            ],
+            [
+                1385,
+                1390,
+                "  if (aEvent.mTouches.Length() == 0) {"
+            ],
+            [
+                1386,
+                1391,
+                "    return apzc.forget();"
+            ],
+            [
+                1387,
+                1392,
+                "  }"
+            ],
+            [
+                1388,
+                1393,
+                ""
+            ],
+            [
+                1389,
+                1394,
+                "  FlushRepaintsToClearScreenToGeckoTransform();"
+            ],
+            [
+                1390,
+                1395,
+                ""
+            ],
+            [
+                1391,
+                0,
+                "  HitTestResult hitResult;"
+            ],
+            [
+                0,
+                1396,
+                "  CompositorHitTestInfo hitResult;"
+            ],
+            [
+                1392,
+                1397,
+                "  apzc = GetTargetAPZC(aEvent.mTouches[0].mScreenPoint, &hitResult,"
+            ],
+            [
+                1393,
+                1398,
+                "      aOutHitScrollbarNode);"
+            ],
+            [
+                1394,
+                1399,
+                "  if (aOutTouchBehaviors) {"
+            ],
+            [
+                1395,
+                1400,
+                "    aOutTouchBehaviors->AppendElement(ConvertToTouchBehavior(hitResult));"
+            ],
+            [
+                1396,
+                1401,
+                "  }"
+            ],
+            [
+                1397,
+                1402,
+                "  for (size_t i = 1; i < aEvent.mTouches.Length(); i++) {"
+            ],
+            [
+                1398,
+                1403,
+                "    RefPtr<AsyncPanZoomController> apzc2 = GetTargetAPZC(aEvent.mTouches[i].mScreenPoint, &hitResult);"
+            ],
+            [
+                1399,
+                1404,
+                "    if (aOutTouchBehaviors) {"
+            ],
+            [
+                1434,
+                1439,
+                "        mApzcForInputBlock->IsInPanningState() &&"
+            ],
+            [
+                1435,
+                1440,
+                "        BuildOverscrollHandoffChain(mApzcForInputBlock)->HasOverscrolledApzc()) {"
+            ],
+            [
+                1436,
+                1441,
+                "      if (mRetainedTouchIdentifier == -1) {"
+            ],
+            [
+                1437,
+                1442,
+                "        mRetainedTouchIdentifier = mApzcForInputBlock->GetLastTouchIdentifier();"
+            ],
+            [
+                1438,
+                1443,
+                "      }"
+            ],
+            [
+                1439,
+                1444,
+                "      return nsEventStatus_eConsumeNoDefault;"
+            ],
+            [
+                1440,
+                1445,
+                "    }"
+            ],
+            [
+                1441,
+                1446,
+                ""
+            ],
+            [
+                1442,
+                0,
+                "    mHitResultForInputBlock = HitNothing;"
+            ],
+            [
+                0,
+                1447,
+                "    mHitResultForInputBlock = CompositorHitTestInfo::eInvisibleToHitTest;"
+            ],
+            [
+                1443,
+                1448,
+                "    mApzcForInputBlock = GetTouchInputBlockAPZC(aInput, &touchBehaviors,"
+            ],
+            [
+                1444,
+                1449,
+                "        &mHitResultForInputBlock, &hitScrollbarNode);"
+            ],
+            [
+                1445,
+                1450,
+                ""
+            ],
+            [
+                1446,
+                1451,
+                "    // Check if this event starts a scrollbar touch-drag. The conditions"
+            ],
+            [
+                1447,
+                1452,
+                "    // checked are similar to the ones we check for MOUSE_INPUT starting"
+            ],
+            [
+                1448,
+                1453,
+                "    // a scrollbar mouse-drag."
+            ],
+            [
+                1449,
+                1454,
+                "    mInScrollbarTouchDrag = gfxPrefs::APZDragEnabled() &&"
+            ],
+            [
+                1450,
+                1455,
+                "                            gfxPrefs::APZTouchDragEnabled() && hitScrollbarNode &&"
+            ],
+            [
+                1493,
+                1498,
+                "        }"
+            ],
+            [
+                1494,
+                1499,
+                "      }"
+            ],
+            [
+                1495,
+                1500,
+                "      if (aInput.mTouches.IsEmpty()) {"
+            ],
+            [
+                1496,
+                1501,
+                "        return nsEventStatus_eConsumeNoDefault;"
+            ],
+            [
+                1497,
+                1502,
+                "      }"
+            ],
+            [
+                1498,
+                1503,
+                "    }"
+            ],
+            [
+                1499,
+                1504,
+                ""
+            ],
+            [
+                1500,
+                1505,
+                "    if (mApzcForInputBlock) {"
+            ],
+            [
+                1501,
+                0,
+                "      MOZ_ASSERT(mHitResultForInputBlock != HitNothing);"
+            ],
+            [
+                0,
+                1506,
+                "      MOZ_ASSERT(mHitResultForInputBlock != CompositorHitTestInfo::eInvisibleToHitTest);"
+            ],
+            [
+                1502,
+                1507,
+                ""
+            ],
+            [
+                1503,
+                1508,
+                "      mApzcForInputBlock->GetGuid(aOutTargetGuid);"
+            ],
+            [
+                1504,
+                1509,
+                "      uint64_t inputBlockId = 0;"
+            ],
+            [
+                1505,
+                1510,
+                "      result = mInputQueue->ReceiveInputEvent(mApzcForInputBlock,"
+            ],
+            [
+                1506,
+                0,
+                "          /* aTargetConfirmed = */ mHitResultForInputBlock != HitDispatchToContentRegion,"
+            ],
+            [
+                0,
+                1511,
+                "          /* aTargetConfirmed = */ !(mHitResultForInputBlock & CompositorHitTestInfo::eDispatchToContent),"
+            ],
+            [
+                1507,
+                1512,
+                "          aInput, &inputBlockId);"
+            ],
+            [
+                1508,
+                1513,
+                "      if (aOutInputBlockId) {"
+            ],
+            [
+                1509,
+                1514,
+                "        *aOutInputBlockId = inputBlockId;"
+            ],
+            [
+                1510,
+                1515,
+                "      }"
+            ],
+            [
+                1511,
+                1516,
+                "      if (!touchBehaviors.IsEmpty()) {"
+            ],
+            [
+                1512,
+                1517,
+                "        mInputQueue->SetAllowedTouchBehavior(inputBlockId, touchBehaviors);"
+            ],
+            [
+                1513,
+                1518,
+                "      }"
+            ],
+            [
+                1514,
+                1519,
+                ""
+            ],
+            [
+                1532,
+                1537,
+                "  }"
+            ],
+            [
+                1533,
+                1538,
+                ""
+            ],
+            [
+                1534,
+                1539,
+                "  mTouchCounter.Update(aInput);"
+            ],
+            [
+                1535,
+                1540,
+                ""
+            ],
+            [
+                1536,
+                1541,
+                "  // If it's the end of the touch sequence then clear out variables so we"
+            ],
+            [
+                1537,
+                1542,
+                "  // don't keep dangling references and leak things."
+            ],
+            [
+                1538,
+                1543,
+                "  if (mTouchCounter.GetActiveTouchCount() == 0) {"
+            ],
+            [
+                1539,
+                1544,
+                "    mApzcForInputBlock = nullptr;"
+            ],
+            [
+                1540,
+                0,
+                "    mHitResultForInputBlock = HitNothing;"
+            ],
+            [
+                0,
+                1545,
+                "    mHitResultForInputBlock = CompositorHitTestInfo::eInvisibleToHitTest;"
+            ],
+            [
+                1541,
+                1546,
+                "    mRetainedTouchIdentifier = -1;"
+            ],
+            [
+                1542,
+                1547,
+                "    mInScrollbarTouchDrag = false;"
+            ],
+            [
+                1543,
+                1548,
+                "  }"
+            ],
+            [
+                1544,
+                1549,
+                ""
+            ],
+            [
+                1545,
+                1550,
+                "  return result;"
+            ],
+            [
+                1546,
+                1551,
+                "}"
+            ],
+            [
+                1547,
+                1552,
+                ""
+            ],
+            [
+                1548,
+                1553,
+                "MouseInput::MouseType"
+            ],
+            [
+                1725,
+                1730,
+                ""
+            ],
+            [
+                1726,
+                1731,
+                "void"
+            ],
+            [
+                1727,
+                1732,
+                "APZCTreeManager::ProcessUnhandledEvent(LayoutDeviceIntPoint* aRefPoint,"
+            ],
+            [
+                1728,
+                1733,
+                "                                        ScrollableLayerGuid*  aOutTargetGuid,"
+            ],
+            [
+                1729,
+                1734,
+                "                                        uint64_t*             aOutFocusSequenceNumber)"
+            ],
+            [
+                1730,
+                1735,
+                "{"
+            ],
+            [
+                1731,
+                1736,
+                "  // Transform the aRefPoint."
+            ],
+            [
+                1732,
+                1737,
+                "  // If the event hits an overscrolled APZC, instruct the caller to ignore it."
+            ],
+            [
+                1733,
+                0,
+                "  HitTestResult hitResult = HitNothing;"
+            ],
+            [
+                0,
+                1738,
+                "  CompositorHitTestInfo hitResult = CompositorHitTestInfo::eInvisibleToHitTest;"
+            ],
+            [
+                1734,
+                1739,
+                "  PixelCastJustification LDIsScreen = PixelCastJustification::LayoutDeviceIsScreenForUntransformedEvent;"
+            ],
+            [
+                1735,
+                1740,
+                "  ScreenIntPoint refPointAsScreen ="
+            ],
+            [
+                1736,
+                1741,
+                "    ViewAs<ScreenPixel>(*aRefPoint, LDIsScreen);"
+            ],
+            [
+                1737,
+                1742,
+                "  RefPtr<AsyncPanZoomController> apzc = GetTargetAPZC(refPointAsScreen, &hitResult);"
+            ],
+            [
+                1738,
+                1743,
+                "  if (apzc) {"
+            ],
+            [
+                1739,
+                0,
+                "    MOZ_ASSERT(hitResult != HitNothing);"
+            ],
+            [
+                0,
+                1744,
+                "    MOZ_ASSERT(hitResult != CompositorHitTestInfo::eInvisibleToHitTest);"
+            ],
+            [
+                1740,
+                1745,
+                "    apzc->GetGuid(aOutTargetGuid);"
+            ],
+            [
+                1741,
+                1746,
+                "    ScreenToParentLayerMatrix4x4 transformToApzc = GetScreenToApzcTransform(apzc);"
+            ],
+            [
+                1742,
+                1747,
+                "    ParentLayerToScreenMatrix4x4 transformToGecko = GetApzcToGeckoTransform(apzc);"
+            ],
+            [
+                1743,
+                1748,
+                "    ScreenToScreenMatrix4x4 outTransform = transformToApzc * transformToGecko;"
+            ],
+            [
+                1744,
+                1749,
+                "    Maybe<ScreenIntPoint> untransformedRefPoint ="
+            ],
+            [
+                1745,
+                1750,
+                "      UntransformBy(outTransform, refPointAsScreen);"
+            ],
+            [
+                1746,
+                1751,
+                "    if (untransformedRefPoint) {"
+            ],
+            [
+                1747,
+                1752,
+                "      *aRefPoint ="
+            ],
+            [
+                2194,
+                2199,
+                "        return matches;"
+            ],
+            [
+                2195,
+                2200,
+                "      }"
+            ],
+            [
+                2196,
+                2201,
+                "  );"
+            ],
+            [
+                2197,
+                2202,
+                "  return target.forget();"
+            ],
+            [
+                2198,
+                2203,
+                "}"
+            ],
+            [
+                2199,
+                2204,
+                ""
+            ],
+            [
+                2200,
+                2205,
+                "already_AddRefed<AsyncPanZoomController>"
+            ],
+            [
+                2201,
+                2206,
+                "APZCTreeManager::GetTargetAPZC(const ScreenPoint& aPoint,"
+            ],
+            [
+                2202,
+                0,
+                "                               HitTestResult* aOutHitResult,"
+            ],
+            [
+                0,
+                2207,
+                "                               CompositorHitTestInfo* aOutHitResult,"
+            ],
+            [
+                2203,
+                2208,
+                "                               RefPtr<HitTestingTreeNode>* aOutScrollbarNode)"
+            ],
+            [
+                2204,
+                2209,
+                "{"
+            ],
+            [
+                2205,
+                2210,
+                "  MutexAutoLock lock(mTreeLock);"
+            ],
+            [
+                2206,
+                2211,
+                ""
+            ],
+            [
+                2207,
+                0,
+                "  HitTestResult hitResult = HitNothing;"
+            ],
+            [
+                0,
+                2212,
+                "  CompositorHitTestInfo hitResult = CompositorHitTestInfo::eInvisibleToHitTest;"
+            ],
+            [
+                2208,
+                2213,
+                "  HitTestingTreeNode* scrollbarNode = nullptr;"
+            ],
+            [
+                2209,
+                2214,
+                "  RefPtr<AsyncPanZoomController> target;"
+            ],
+            [
+                2210,
+                2215,
+                "  target = GetAPZCAtPoint(mRootNode, aPoint, &hitResult, &scrollbarNode);"
+            ],
+            [
+                2211,
+                2216,
+                ""
+            ],
+            [
+                2212,
+                2217,
+                "  if (gfxPrefs::WebRenderHitTest()) {"
+            ],
+            [
+                2213,
+                0,
+                "    HitTestResult wrHitResult = HitNothing;"
+            ],
+            [
+                0,
+                2218,
+                "    CompositorHitTestInfo wrHitResult = CompositorHitTestInfo::eInvisibleToHitTest;"
+            ],
+            [
+                2214,
+                2219,
+                "    HitTestingTreeNode* wrScrollbarNode = nullptr;"
+            ],
+            [
+                2215,
+                2220,
+                "    RefPtr<AsyncPanZoomController> wrTarget = GetAPZCAtPointWR(aPoint, &wrHitResult, &wrScrollbarNode);"
+            ],
+            [
+                2216,
+                2221,
+                "    // For now just compare the WR and non-WR results."
+            ],
+            [
+                2217,
+                2222,
+                "    if (wrHitResult != hitResult) {"
+            ],
+            [
+                2218,
+                0,
+                "      printf_stderr(\"WR hit result mismatch at %s: got %d, expected %d\\n\","
+            ],
+            [
+                0,
+                2223,
+                "      printf_stderr(\"WR hit result mismatch at %s: got 0x%x, expected 0x%x\\n\","
+            ],
+            [
+                2219,
+                2224,
+                "          Stringify(aPoint).c_str(), (int)wrHitResult, (int)hitResult);"
+            ],
+            [
+                2220,
+                2225,
+                "      // MOZ_RELEASE_ASSERT(false);"
+            ],
+            [
+                2221,
+                2226,
+                "    }"
+            ],
+            [
+                2222,
+                2227,
+                "    if (wrTarget.get() != target.get()) {"
+            ],
+            [
+                2223,
+                2228,
+                "      printf_stderr(\"WR hit target mismatch at %s: got %s, expected %s\\n\","
+            ],
+            [
+                2224,
+                2229,
+                "          Stringify(aPoint).c_str(),"
+            ],
+            [
+                2225,
+                2230,
+                "          wrTarget ? Stringify(wrTarget->GetGuid()).c_str() : \"null\","
+            ],
+            [
+                2226,
+                2231,
+                "          target ? Stringify(target->GetGuid()).c_str() : \"null\");"
+            ],
+            [
+                2239,
+                2244,
+                "  if (aOutScrollbarNode) {"
+            ],
+            [
+                2240,
+                2245,
+                "    *aOutScrollbarNode = scrollbarNode;"
+            ],
+            [
+                2241,
+                2246,
+                "  }"
+            ],
+            [
+                2242,
+                2247,
+                "  return target.forget();"
+            ],
+            [
+                2243,
+                2248,
+                "}"
+            ],
+            [
+                2244,
+                2249,
+                ""
+            ],
+            [
+                2245,
+                2250,
+                "already_AddRefed<AsyncPanZoomController>"
+            ],
+            [
+                2246,
+                2251,
+                "APZCTreeManager::GetAPZCAtPointWR(const ScreenPoint& aHitTestPoint,"
+            ],
+            [
+                2247,
+                0,
+                "                                  HitTestResult* aOutHitResult,"
+            ],
+            [
+                0,
+                2252,
+                "                                  CompositorHitTestInfo* aOutHitResult,"
+            ],
+            [
+                2248,
+                2253,
+                "                                  HitTestingTreeNode** aOutScrollbarNode)"
+            ],
+            [
+                2249,
+                2254,
+                "{"
+            ],
+            [
+                2250,
+                2255,
+                "  MOZ_ASSERT(aOutHitResult);"
+            ],
+            [
+                2251,
+                2256,
+                "  MOZ_ASSERT(aOutScrollbarNode);"
+            ],
+            [
+                2252,
+                2257,
+                ""
+            ],
+            [
+                2253,
+                2258,
+                "  RefPtr<AsyncPanZoomController> result;"
+            ],
+            [
+                2254,
+                2259,
+                "  RefPtr<wr::WebRenderAPI> wr = GetWebRenderAPI();"
+            ],
+            [
+                2255,
+                2260,
+                "  if (!wr) {"
+            ],
+            [
+                2289,
+                2294,
+                "        return (aNode->GetLayersId() == layersId) &&"
+            ],
+            [
+                2290,
+                2295,
+                "               (aNode->IsScrollbarNode() == isScrollbar) &&"
+            ],
+            [
+                2291,
+                2296,
+                "               (aNode->IsScrollThumbNode() == isScrollbarThumb) &&"
+            ],
+            [
+                2292,
+                2297,
+                "               (aNode->GetScrollbarDirection() == direction) &&"
+            ],
+            [
+                2293,
+                2298,
+                "               (aNode->GetScrollTargetId() == scrollId);"
+            ],
+            [
+                2294,
+                2299,
+                "      });"
+            ],
+            [
+                2295,
+                2300,
+                "  }"
+            ],
+            [
+                2296,
+                2301,
+                ""
+            ],
+            [
+                2297,
+                0,
+                "  *aOutHitResult = HitLayer;"
+            ],
+            [
+                2298,
+                0,
+                "  if (hitInfo & gfx::CompositorHitTestInfo::eDispatchToContent) {"
+            ],
+            [
+                2299,
+                0,
+                "    *aOutHitResult = HitDispatchToContentRegion;"
+            ],
+            [
+                2300,
+                0,
+                "    return result.forget();"
+            ],
+            [
+                2301,
+                0,
+                "  }"
+            ],
+            [
+                2302,
+                0,
+                ""
+            ],
+            [
+                2303,
+                0,
+                "  auto touchFlags = hitInfo & gfx::CompositorHitTestInfo::eTouchActionMask;"
+            ],
+            [
+                2304,
+                0,
+                "  if (!touchFlags) {"
+            ],
+            [
+                2305,
+                0,
+                "    return result.forget();"
+            ],
+            [
+                2306,
+                0,
+                "  }"
+            ],
+            [
+                2307,
+                0,
+                "  if (touchFlags == gfx::CompositorHitTestInfo::eTouchActionMask) {"
+            ],
+            [
+                2308,
+                0,
+                "    *aOutHitResult = HitLayerTouchActionNone;"
+            ],
+            [
+                2309,
+                0,
+                "    return result.forget();"
+            ],
+            [
+                2310,
+                0,
+                "  }"
+            ],
+            [
+                2311,
+                0,
+                ""
+            ],
+            [
+                2312,
+                0,
+                "  bool panX = !(hitInfo & gfx::CompositorHitTestInfo::eTouchActionPanXDisabled);"
+            ],
+            [
+                2313,
+                0,
+                "  bool panY = !(hitInfo & gfx::CompositorHitTestInfo::eTouchActionPanYDisabled);"
+            ],
+            [
+                2314,
+                0,
+                "  if (panX && panY) {"
+            ],
+            [
+                2315,
+                0,
+                "    *aOutHitResult = HitLayerTouchActionPanXY;"
+            ],
+            [
+                2316,
+                0,
+                "  } else if (panY) {"
+            ],
+            [
+                2317,
+                0,
+                "    *aOutHitResult = HitLayerTouchActionPanY;"
+            ],
+            [
+                2318,
+                0,
+                "  } else if (panX) {"
+            ],
+            [
+                2319,
+                0,
+                "    *aOutHitResult = HitLayerTouchActionPanX;"
+            ],
+            [
+                2320,
+                0,
+                "  }"
+            ],
+            [
+                0,
+                2302,
+                "  *aOutHitResult = hitInfo;"
+            ],
+            [
+                2321,
+                2303,
+                "  return result.forget();"
+            ],
+            [
+                2322,
+                2304,
+                "}"
+            ],
+            [
+                2323,
+                2305,
+                ""
+            ],
+            [
+                2324,
+                2306,
+                "RefPtr<const OverscrollHandoffChain>"
+            ],
+            [
+                2325,
+                2307,
+                "APZCTreeManager::BuildOverscrollHandoffChain(const RefPtr<AsyncPanZoomController>& aInitialTarget)"
+            ],
+            [
+                2326,
+                2308,
+                "{"
+            ],
+            [
+                2327,
+                2309,
+                "  // Scroll grabbing is a mechanism that allows content to specify that"
+            ],
+            [
+                2328,
+                2310,
+                "  // the initial target of a pan should be not the innermost scrollable"
+            ],
+            [
+                2434,
+                2416,
+                "    }"
+            ],
+            [
+                2435,
+                2417,
+                "  }"
+            ],
+            [
+                2436,
+                2418,
+                "  return nullptr;"
+            ],
+            [
+                2437,
+                2419,
+                "}"
+            ],
+            [
+                2438,
+                2420,
+                ""
+            ],
+            [
+                2439,
+                2421,
+                "AsyncPanZoomController*"
+            ],
+            [
+                2440,
+                2422,
+                "APZCTreeManager::GetAPZCAtPoint(HitTestingTreeNode* aNode,"
+            ],
+            [
+                2441,
+                2423,
+                "                                const ScreenPoint& aHitTestPoint,"
+            ],
+            [
+                2442,
+                0,
+                "                                HitTestResult* aOutHitResult,"
+            ],
+            [
+                0,
+                2424,
+                "                                CompositorHitTestInfo* aOutHitResult,"
+            ],
+            [
+                2443,
+                2425,
+                "                                HitTestingTreeNode** aOutScrollbarNode)"
+            ],
+            [
+                2444,
+                2426,
+                "{"
+            ],
+            [
+                2445,
+                2427,
+                "  mTreeLock.AssertCurrentThreadOwns();"
+            ],
+            [
+                2446,
+                2428,
+                ""
+            ],
+            [
+                2447,
+                2429,
+                "  // This walks the tree in depth-first, reverse order, so that it encounters"
+            ],
+            [
+                2448,
+                2430,
+                "  // APZCs front-to-back on the screen."
+            ],
+            [
+                2449,
+                2431,
+                "  HitTestingTreeNode* resultNode;"
+            ],
+            [
+                2450,
+                2432,
+                "  HitTestingTreeNode* root = aNode;"
+            ],
+            [
+                2475,
+                2457,
+                "                hitTestPoint ? Stringify(hitTestPoint.ref()).c_str() : \"nil\");"
+            ],
+            [
+                2476,
+                2458,
+                "        if (!hitTestPoint) {"
+            ],
+            [
+                2477,
+                2459,
+                "          return TraversalFlag::Skip;"
+            ],
+            [
+                2478,
+                2460,
+                "        }"
+            ],
+            [
+                2479,
+                2461,
+                "        hitTestPoints.push(hitTestPoint.ref());"
+            ],
+            [
+                2480,
+                2462,
+                "        return TraversalFlag::Continue;"
+            ],
+            [
+                2481,
+                2463,
+                "      },"
+            ],
+            [
+                2482,
+                2464,
+                "      [&resultNode, &hitTestPoints, &aOutHitResult](HitTestingTreeNode* aNode) {"
+            ],
+            [
+                2483,
+                0,
+                "        HitTestResult hitResult = aNode->HitTest(hitTestPoints.top());"
+            ],
+            [
+                0,
+                2465,
+                "        CompositorHitTestInfo hitResult = aNode->HitTest(hitTestPoints.top());"
+            ],
+            [
+                2484,
+                2466,
+                "        hitTestPoints.pop();"
+            ],
+            [
+                2485,
+                2467,
+                "        APZCTM_LOG(\"Testing Layer point %s against node %p\\n\","
+            ],
+            [
+                2486,
+                2468,
+                "                Stringify(hitTestPoints.top()).c_str(), aNode);"
+            ],
+            [
+                2487,
+                0,
+                "        if (hitResult != HitTestResult::HitNothing) {"
+            ],
+            [
+                0,
+                2469,
+                "        if (hitResult != CompositorHitTestInfo::eInvisibleToHitTest) {"
+            ],
+            [
+                2488,
+                2470,
+                "          resultNode = aNode;"
+            ],
+            [
+                2489,
+                0,
+                "          // If event regions are disabled, *aOutHitResult will be HitLayer"
+            ],
+            [
+                2490,
+                2471,
+                "          *aOutHitResult = hitResult;"
+            ],
+            [
+                2491,
+                2472,
+                "          return TraversalFlag::Abort;"
+            ],
+            [
+                2492,
+                2473,
+                "        }"
+            ],
+            [
+                2493,
+                2474,
+                "        return TraversalFlag::Continue;"
+            ],
+            [
+                2494,
+                2475,
+                "      }"
+            ],
+            [
+                2495,
+                2476,
+                "  );"
+            ],
+            [
+                2496,
+                2477,
+                ""
+            ],
+            [
+                2497,
+                0,
+                "  if (*aOutHitResult != HitNothing) {"
+            ],
+            [
+                2498,
+                0,
+                "      MOZ_ASSERT(resultNode);"
+            ],
+            [
+                2499,
+                0,
+                "      for (HitTestingTreeNode* n = resultNode; n; n = n->GetParent()) {"
+            ],
+            [
+                2500,
+                0,
+                "        if (n->IsScrollbarNode()) {"
+            ],
+            [
+                2501,
+                0,
+                "          *aOutScrollbarNode = n;"
+            ],
+            [
+                2502,
+                0,
+                "          // If we hit a scrollbar, target the APZC for the content scrolled"
+            ],
+            [
+                2503,
+                0,
+                "          // by the scrollbar. (The scrollbar itself doesn't scroll with the"
+            ],
+            [
+                2504,
+                0,
+                "          // scrolled content, so it doesn't carry the scrolled content's"
+            ],
+            [
+                2505,
+                0,
+                "          // scroll metadata)."
+            ],
+            [
+                2506,
+                0,
+                "          ScrollableLayerGuid guid(n->GetLayersId(), 0, n->GetScrollTargetId());"
+            ],
+            [
+                2507,
+                0,
+                "          if (RefPtr<HitTestingTreeNode> scrollTarget = GetTargetNode(guid, &GuidComparatorIgnoringPresShell)) {"
+            ],
+            [
+                2508,
+                0,
+                "            MOZ_ASSERT(scrollTarget->GetApzc());"
+            ],
+            [
+                2509,
+                0,
+                "            return scrollTarget->GetApzc();"
+            ],
+            [
+                2510,
+                0,
+                "          }"
+            ],
+            [
+                0,
+                2478,
+                "  if (*aOutHitResult != CompositorHitTestInfo::eInvisibleToHitTest) {"
+            ],
+            [
+                0,
+                2479,
+                "    MOZ_ASSERT(resultNode);"
+            ],
+            [
+                0,
+                2480,
+                "    for (HitTestingTreeNode* n = resultNode; n; n = n->GetParent()) {"
+            ],
+            [
+                0,
+                2481,
+                "      if (n->IsScrollbarNode()) {"
+            ],
+            [
+                0,
+                2482,
+                "        *aOutScrollbarNode = n;"
+            ],
+            [
+                0,
+                2483,
+                "        *aOutHitResult |= CompositorHitTestInfo::eScrollbar;"
+            ],
+            [
+                0,
+                2484,
+                "        if (n->IsScrollThumbNode()) {"
+            ],
+            [
+                0,
+                2485,
+                "          *aOutHitResult |= CompositorHitTestInfo::eScrollbarThumb;"
+            ],
+            [
+                0,
+                2486,
+                "        }"
+            ],
+            [
+                0,
+                2487,
+                "        if (n->GetScrollbarDirection() == ScrollDirection::eVertical) {"
+            ],
+            [
+                0,
+                2488,
+                "          *aOutHitResult |= CompositorHitTestInfo::eScrollbarVertical;"
+            ],
+            [
+                0,
+                2489,
+                "        }"
+            ],
+            [
+                0,
+                2490,
+                ""
+            ],
+            [
+                0,
+                2491,
+                "        // If we hit a scrollbar, target the APZC for the content scrolled"
+            ],
+            [
+                0,
+                2492,
+                "        // by the scrollbar. (The scrollbar itself doesn't scroll with the"
+            ],
+            [
+                0,
+                2493,
+                "        // scrolled content, so it doesn't carry the scrolled content's"
+            ],
+            [
+                0,
+                2494,
+                "        // scroll metadata)."
+            ],
+            [
+                0,
+                2495,
+                "        ScrollableLayerGuid guid(n->GetLayersId(), 0, n->GetScrollTargetId());"
+            ],
+            [
+                0,
+                2496,
+                "        if (RefPtr<HitTestingTreeNode> scrollTarget = GetTargetNode(guid, &GuidComparatorIgnoringPresShell)) {"
+            ],
+            [
+                0,
+                2497,
+                "          MOZ_ASSERT(scrollTarget->GetApzc());"
+            ],
+            [
+                0,
+                2498,
+                "          return scrollTarget->GetApzc();"
+            ],
+            [
+                2511,
+                2499,
+                "        }"
+            ],
+            [
+                2512,
+                2500,
+                "      }"
+            ],
+            [
+                0,
+                2501,
+                "    }"
+            ],
+            [
+                2513,
+                2502,
+                ""
+            ],
+            [
+                2514,
+                0,
+                "      AsyncPanZoomController* result = GetTargetApzcForNode(resultNode);"
+            ],
+            [
+                2515,
+                0,
+                "      if (!result) {"
+            ],
+            [
+                2516,
+                0,
+                "        result = FindRootApzcForLayersId(resultNode->GetLayersId());"
+            ],
+            [
+                2517,
+                0,
+                "        MOZ_ASSERT(result);"
+            ],
+            [
+                2518,
+                0,
+                "        APZCTM_LOG(\"Found target %p using root lookup\\n\", result);"
+            ],
+            [
+                2519,
+                0,
+                "      }"
+            ],
+            [
+                2520,
+                0,
+                "      APZCTM_LOG(\"Successfully matched APZC %p via node %p (hit result %d)\\n\","
+            ],
+            [
+                2521,
+                0,
+                "          result, resultNode, *aOutHitResult);"
+            ],
+            [
+                2522,
+                0,
+                "      return result;"
+            ],
+            [
+                0,
+                2503,
+                "    AsyncPanZoomController* result = GetTargetApzcForNode(resultNode);"
+            ],
+            [
+                0,
+                2504,
+                "    if (!result) {"
+            ],
+            [
+                0,
+                2505,
+                "      result = FindRootApzcForLayersId(resultNode->GetLayersId());"
+            ],
+            [
+                0,
+                2506,
+                "      MOZ_ASSERT(result);"
+            ],
+            [
+                0,
+                2507,
+                "      APZCTM_LOG(\"Found target %p using root lookup\\n\", result);"
+            ],
+            [
+                0,
+                2508,
+                "    }"
+            ],
+            [
+                0,
+                2509,
+                "    APZCTM_LOG(\"Successfully matched APZC %p via node %p (hit result 0x%x)\\n\","
+            ],
+            [
+                0,
+                2510,
+                "        result, resultNode, (int)*aOutHitResult);"
+            ],
+            [
+                0,
+                2511,
+                "    return result;"
+            ],
+            [
+                2523,
+                2512,
+                "  }"
+            ],
+            [
+                2524,
+                2513,
+                ""
+            ],
+            [
+                2525,
+                2514,
+                "  return nullptr;"
+            ],
+            [
+                2526,
+                2515,
+                "}"
+            ],
+            [
+                2527,
+                2516,
+                ""
+            ],
+            [
+                2528,
+                2517,
+                "AsyncPanZoomController*"
+            ],
+            [
+                2529,
+                2518,
+                "APZCTreeManager::FindRootApzcForLayersId(uint64_t aLayersId) const"
+            ],
+            [
+                2530,
+                2519,
+                "{"
+            ]
+        ]
+    },
+    {
+        "new": false,
+        "deleted": false,
+        "renamed_from": null,
+        "filename": "gfx/layers/apz/src/APZCTreeManager.h",
+        "binary": false,
+        "count_add": 6,
+        "count_del": 5,
+        "lines": [
+            [
+                6,
+                6,
+                ""
+            ],
+            [
+                7,
+                7,
+                "#ifndef mozilla_layers_APZCTreeManager_h"
+            ],
+            [
+                8,
+                8,
+                "#define mozilla_layers_APZCTreeManager_h"
+            ],
+            [
+                9,
+                9,
+                ""
+            ],
+            [
+                10,
+                10,
+                "#include <unordered_map>                          // for std::unordered_map"
+            ],
+            [
+                11,
+                11,
+                ""
+            ],
+            [
+                12,
+                12,
+                "#include \"gfxPoint.h\"                   // for gfxPoint"
+            ],
+            [
+                13,
+                13,
+                "#include \"mozilla/Assertions.h\"         // for MOZ_ASSERT_HELPER2"
+            ],
+            [
+                0,
+                14,
+                "#include \"mozilla/gfx/CompositorHitTestInfo.h\""
+            ],
+            [
+                14,
+                15,
+                "#include \"mozilla/gfx/Logging.h\"        // for gfx::TreeLog"
+            ],
+            [
+                15,
+                16,
+                "#include \"mozilla/gfx/Matrix.h\"         // for Matrix4x4"
+            ],
+            [
+                16,
+                17,
+                "#include \"mozilla/layers/TouchCounter.h\"// for TouchCounter"
+            ],
+            [
+                17,
+                18,
+                "#include \"mozilla/layers/IAPZCTreeManager.h\" // for IAPZCTreeManager"
+            ],
+            [
+                18,
+                19,
+                "#include \"mozilla/layers/KeyboardMap.h\" // for KeyboardMap"
+            ],
+            [
+                19,
+                20,
+                "#include \"mozilla/layers/FocusState.h\"  // for FocusState"
+            ],
+            [
+                20,
+                21,
+                "#include \"mozilla/Mutex.h\"              // for Mutex"
+            ],
+            [
+                21,
+                22,
+                "#include \"mozilla/RefPtr.h\"             // for RefPtr"
+            ],
+            [
+                479,
+                480,
+                "  /* Some helper functions to find an APZC given some identifying input. These functions"
+            ],
+            [
+                480,
+                481,
+                "     lock the tree of APZCs while they find the right one, and then return an addref'd"
+            ],
+            [
+                481,
+                482,
+                "     pointer to it. This allows caller code to just use the target APZC without worrying"
+            ],
+            [
+                482,
+                483,
+                "     about it going away. These are public for testing code and generally should not be"
+            ],
+            [
+                483,
+                484,
+                "     used by other production code."
+            ],
+            [
+                484,
+                485,
+                "  */"
+            ],
+            [
+                485,
+                486,
+                "  RefPtr<HitTestingTreeNode> GetRootNode() const;"
+            ],
+            [
+                486,
+                487,
+                "  already_AddRefed<AsyncPanZoomController> GetTargetAPZC(const ScreenPoint& aPoint,"
+            ],
+            [
+                487,
+                0,
+                "                                                         HitTestResult* aOutHitResult,"
+            ],
+            [
+                0,
+                488,
+                "                                                         gfx::CompositorHitTestInfo* aOutHitResult,"
+            ],
+            [
+                488,
+                489,
+                "                                                         RefPtr<HitTestingTreeNode>* aOutScrollbarNode = nullptr);"
+            ],
+            [
+                489,
+                490,
+                "  already_AddRefed<AsyncPanZoomController> GetTargetAPZC(const uint64_t& aLayersId,"
+            ],
+            [
+                490,
+                491,
+                "                                                         const FrameMetrics::ViewID& aScrollId);"
+            ],
+            [
+                491,
+                492,
+                "  ScreenToParentLayerMatrix4x4 GetScreenToApzcTransform(const AsyncPanZoomController *aApzc) const;"
+            ],
+            [
+                492,
+                493,
+                "  ParentLayerToScreenMatrix4x4 GetApzcToGeckoTransform(const AsyncPanZoomController *aApzc) const;"
+            ],
+            [
+                493,
+                494,
+                "  ScreenPoint GetCurrentMousePosition() const;"
+            ],
+            [
+                494,
+                495,
+                ""
+            ],
+            [
+                495,
+                496,
+                "  /**"
+            ],
+            [
+                517,
+                518,
+                "  already_AddRefed<HitTestingTreeNode> GetTargetNode(const ScrollableLayerGuid& aGuid,"
+            ],
+            [
+                518,
+                519,
+                "                                                     GuidComparator aComparator) const;"
+            ],
+            [
+                519,
+                520,
+                "  HitTestingTreeNode* FindTargetNode(HitTestingTreeNode* aNode,"
+            ],
+            [
+                520,
+                521,
+                "                                     const ScrollableLayerGuid& aGuid,"
+            ],
+            [
+                521,
+                522,
+                "                                     GuidComparator aComparator);"
+            ],
+            [
+                522,
+                523,
+                "  AsyncPanZoomController* GetTargetApzcForNode(HitTestingTreeNode* aNode);"
+            ],
+            [
+                523,
+                524,
+                "  AsyncPanZoomController* GetAPZCAtPoint(HitTestingTreeNode* aNode,"
+            ],
+            [
+                524,
+                525,
+                "                                         const ScreenPoint& aHitTestPoint,"
+            ],
+            [
+                525,
+                0,
+                "                                         HitTestResult* aOutHitResult,"
+            ],
+            [
+                0,
+                526,
+                "                                         gfx::CompositorHitTestInfo* aOutHitResult,"
+            ],
+            [
+                526,
+                527,
+                "                                         HitTestingTreeNode** aOutScrollbarNode);"
+            ],
+            [
+                527,
+                528,
+                "  already_AddRefed<AsyncPanZoomController> GetAPZCAtPointWR(const ScreenPoint& aHitTestPoint,"
+            ],
+            [
+                528,
+                0,
+                "                                                            HitTestResult* aOutHitResult,"
+            ],
+            [
+                0,
+                529,
+                "                                                            gfx::CompositorHitTestInfo* aOutHitResult,"
+            ],
+            [
+                529,
+                530,
+                "                                                            HitTestingTreeNode** aOutScrollbarNode);"
+            ],
+            [
+                530,
+                531,
+                "  AsyncPanZoomController* FindRootApzcForLayersId(uint64_t aLayersId) const;"
+            ],
+            [
+                531,
+                532,
+                "  AsyncPanZoomController* FindRootContentApzcForLayersId(uint64_t aLayersId) const;"
+            ],
+            [
+                532,
+                533,
+                "  AsyncPanZoomController* FindRootContentOrRootApzc() const;"
+            ],
+            [
+                533,
+                534,
+                "  already_AddRefed<AsyncPanZoomController> GetMultitouchTarget(AsyncPanZoomController* aApzc1, AsyncPanZoomController* aApzc2) const;"
+            ],
+            [
+                534,
+                535,
+                "  already_AddRefed<AsyncPanZoomController> CommonAncestor(AsyncPanZoomController* aApzc1, AsyncPanZoomController* aApzc2) const;"
+            ],
+            [
+                535,
+                536,
+                "  /**"
+            ],
+            [
+                536,
+                537,
+                "   * Perform hit testing for a touch-start event."
+            ],
+            [
+                547,
+                548,
+                "   *     If the touch event contains a single touch point (so that it may"
+            ],
+            [
+                548,
+                549,
+                "   *     potentially start a scrollbar drag), and a scrollbar node was hit,"
+            ],
+            [
+                549,
+                550,
+                "   *     that scrollbar node, otherwise nullptr."
+            ],
+            [
+                550,
+                551,
+                "   *"
+            ],
+            [
+                551,
+                552,
+                "   * @return The APZC that was hit."
+            ],
+            [
+                552,
+                553,
+                "   */"
+            ],
+            [
+                553,
+                554,
+                "  already_AddRefed<AsyncPanZoomController> GetTouchInputBlockAPZC(const MultiTouchInput& aEvent,"
+            ],
+            [
+                554,
+                555,
+                "                                                                  nsTArray<TouchBehaviorFlags>* aOutTouchBehaviors,"
+            ],
+            [
+                555,
+                0,
+                "                                                                  HitTestResult* aOutHitResult,"
+            ],
+            [
+                0,
+                556,
+                "                                                                  gfx::CompositorHitTestInfo* aOutHitResult,"
+            ],
+            [
+                556,
+                557,
+                "                                                                  RefPtr<HitTestingTreeNode>* aOutHitScrollbarNode);"
+            ],
+            [
+                557,
+                558,
+                "  nsEventStatus ProcessTouchInput(MultiTouchInput& aInput,"
+            ],
+            [
+                558,
+                559,
+                "                                  ScrollableLayerGuid* aOutTargetGuid,"
+            ],
+            [
+                559,
+                560,
+                "                                  uint64_t* aOutInputBlockId);"
+            ],
+            [
+                560,
+                561,
+                "  /**"
+            ],
+            [
+                561,
+                562,
+                "   * Given a mouse-down event that hit a scroll thumb node, set up APZ"
+            ],
+            [
+                562,
+                563,
+                "   * dragging of the scroll thumb."
+            ],
+            [
+                563,
+                564,
+                "   *"
+            ],
+            [
+                653,
+                654,
+                "   * This allows touch points to move outside the thing they started on, but still have the"
+            ],
+            [
+                654,
+                655,
+                "   * touch events delivered to the same initial APZC. This will only ever be touched on the"
+            ],
+            [
+                655,
+                656,
+                "   * input delivery thread, and so does not require locking."
+            ],
+            [
+                656,
+                657,
+                "   */"
+            ],
+            [
+                657,
+                658,
+                "  RefPtr<AsyncPanZoomController> mApzcForInputBlock;"
+            ],
+            [
+                658,
+                659,
+                "  /* The hit result for the current input event block; this should always be in"
+            ],
+            [
+                659,
+                660,
+                "   * sync with mApzcForInputBlock."
+            ],
+            [
+                660,
+                661,
+                "   */"
+            ],
+            [
+                661,
+                0,
+                "  HitTestResult mHitResultForInputBlock;"
+            ],
+            [
+                0,
+                662,
+                "  gfx::CompositorHitTestInfo mHitResultForInputBlock;"
+            ],
+            [
+                662,
+                663,
+                "  /* Sometimes we want to ignore all touches except one. In such cases, this"
+            ],
+            [
+                663,
+                664,
+                "   * is set to the identifier of the touch we are not ignoring; in other cases,"
+            ],
+            [
+                664,
+                665,
+                "   * this is set to -1."
+            ],
+            [
+                665,
+                666,
+                "   */"
+            ],
+            [
+                666,
+                667,
+                "  int32_t mRetainedTouchIdentifier;"
+            ],
+            [
+                667,
+                668,
+                "  /* This tracks whether the current input block represents a touch-drag of"
+            ],
+            [
+                668,
+                669,
+                "   * a scrollbar. In this state, touch events are forwarded to content as touch"
+            ],
+            [
+                669,
+                670,
+                "   * events, but converted to mouse events before going into InputQueue and"
+            ]
+        ]
+    },
+    {
+        "new": false,
+        "deleted": false,
+        "renamed_from": null,
+        "filename": "gfx/layers/apz/src/APZUtils.h",
+        "binary": false,
+        "count_add": 0,
+        "count_del": 10,
+        "lines": [
+            [
+                12,
+                12,
+                "#include \"UnitTransforms.h\""
+            ],
+            [
+                13,
+                13,
+                "#include \"mozilla/gfx/Point.h\""
+            ],
+            [
+                14,
+                14,
+                "#include \"mozilla/EnumSet.h\""
+            ],
+            [
+                15,
+                15,
+                "#include \"mozilla/FloatingPoint.h\""
+            ],
+            [
+                16,
+                16,
+                ""
+            ],
+            [
+                17,
+                17,
+                "namespace mozilla {"
+            ],
+            [
+                18,
+                18,
+                "namespace layers {"
+            ],
+            [
+                19,
+                19,
+                ""
+            ],
+            [
+                20,
+                0,
+                "enum HitTestResult {"
+            ],
+            [
+                21,
+                0,
+                "  HitNothing,"
+            ],
+            [
+                22,
+                0,
+                "  HitLayer,"
+            ],
+            [
+                23,
+                0,
+                "  HitLayerTouchActionNone,"
+            ],
+            [
+                24,
+                0,
+                "  HitLayerTouchActionPanX,"
+            ],
+            [
+                25,
+                0,
+                "  HitLayerTouchActionPanY,"
+            ],
+            [
+                26,
+                0,
+                "  HitLayerTouchActionPanXY,"
+            ],
+            [
+                27,
+                0,
+                "  HitDispatchToContentRegion,"
+            ],
+            [
+                28,
+                0,
+                "};"
+            ],
+            [
+                29,
+                0,
+                ""
+            ],
+            [
+                30,
+                20,
+                "enum CancelAnimationFlags : uint32_t {"
+            ],
+            [
+                31,
+                21,
+                "  Default = 0x0,             /* Cancel all animations */"
+            ],
+            [
+                32,
+                22,
+                "  ExcludeOverscroll = 0x1,   /* Don't clear overscroll */"
+            ],
+            [
+                33,
+                23,
+                "  ScrollSnap = 0x2,          /* Snap to snap points */"
+            ],
+            [
+                34,
+                24,
+                "  ExcludeWheel = 0x4,        /* Don't stop wheel smooth-scroll animations */"
+            ],
+            [
+                35,
+                25,
+                "  TriggeredExternally = 0x8, /* Cancellation was not triggered by APZ in"
+            ],
+            [
+                36,
+                26,
+                "                                response to an input event */"
+            ],
+            [
+                37,
+                27,
+                "};"
+            ]
+        ]
+    },
+    {
+        "new": false,
+        "deleted": false,
+        "renamed_from": null,
+        "filename": "gfx/layers/apz/src/HitTestingTreeNode.cpp",
+        "binary": false,
+        "count_add": 42,
+        "count_del": 17,
+        "lines": [
+            [
+                15,
+                15,
+                "#include \"mozilla/layers/AsyncCompositionManager.h\"     // for ViewTransform::operator Matrix4x4()"
+            ],
+            [
+                16,
+                16,
+                "#include \"mozilla/layers/AsyncDragMetrics.h\"            // for AsyncDragMetrics"
+            ],
+            [
+                17,
+                17,
+                "#include \"nsPrintfCString.h\"                            // for nsPrintfCString"
+            ],
+            [
+                18,
+                18,
+                "#include \"UnitTransforms.h\"                             // for ViewAs"
+            ],
+            [
+                19,
+                19,
+                ""
+            ],
+            [
+                20,
+                20,
+                "namespace mozilla {"
+            ],
+            [
+                21,
+                21,
+                "namespace layers {"
+            ],
+            [
+                22,
+                22,
+                ""
+            ],
+            [
+                0,
+                23,
+                "using gfx::CompositorHitTestInfo;"
+            ],
+            [
+                0,
+                24,
+                ""
+            ],
+            [
+                23,
+                25,
+                "HitTestingTreeNode::HitTestingTreeNode(AsyncPanZoomController* aApzc,"
+            ],
+            [
+                24,
+                26,
+                "                                       bool aIsPrimaryHolder,"
+            ],
+            [
+                25,
+                27,
+                "                                       uint64_t aLayersId)"
+            ],
+            [
+                26,
+                28,
+                "  : mApzc(aApzc)"
+            ],
+            [
+                27,
+                29,
+                "  , mIsPrimaryApzcHolder(aIsPrimaryHolder)"
+            ],
+            [
+                28,
+                30,
+                "  , mLayersId(aLayersId)"
+            ],
+            [
+                29,
+                31,
+                "  , mScrollViewId(FrameMetrics::NULL_SCROLL_ID)"
+            ],
+            [
+                30,
+                32,
+                "  , mScrollbarAnimationId(0)"
+            ],
+            [
+                283,
+                285,
+                "{"
+            ],
+            [
+                284,
+                286,
+                "  Maybe<ParentLayerToLayerMatrix4x4> inverse = aTransform.MaybeInverse();"
+            ],
+            [
+                285,
+                287,
+                "  if (inverse) {"
+            ],
+            [
+                286,
+                288,
+                "    return UntransformBy(inverse.ref(), aPoint);"
+            ],
+            [
+                287,
+                289,
+                "  }"
+            ],
+            [
+                288,
+                290,
+                "  return Nothing();"
+            ],
+            [
+                289,
+                291,
+                "}"
+            ],
+            [
+                290,
+                292,
+                ""
+            ],
+            [
+                291,
+                0,
+                "HitTestResult"
+            ],
+            [
+                0,
+                293,
+                "CompositorHitTestInfo"
+            ],
+            [
+                292,
+                294,
+                "HitTestingTreeNode::HitTest(const LayerPoint& aPoint) const"
+            ],
+            [
+                293,
+                295,
+                "{"
+            ],
+            [
+                0,
+                296,
+                "  CompositorHitTestInfo result = CompositorHitTestInfo::eInvisibleToHitTest;"
+            ],
+            [
+                0,
+                297,
+                ""
+            ],
+            [
+                294,
+                298,
+                "  if (mOverride & EventRegionsOverride::ForceEmptyHitRegion) {"
+            ],
+            [
+                295,
+                0,
+                "    return HitTestResult::HitNothing;"
+            ],
+            [
+                0,
+                299,
+                "    return result;"
+            ],
+            [
+                296,
+                300,
+                "  }"
+            ],
+            [
+                297,
+                301,
+                ""
+            ],
+            [
+                298,
+                302,
+                "  auto point = LayerIntPoint::Round(aPoint);"
+            ],
+            [
+                299,
+                303,
+                ""
+            ],
+            [
+                300,
+                304,
+                "  // test against event regions in Layer coordinate space"
+            ],
+            [
+                301,
+                305,
+                "  if (!mEventRegions.mHitRegion.Contains(point.x, point.y)) {"
+            ],
+            [
+                302,
+                0,
+                "    return HitTestResult::HitNothing;"
+            ],
+            [
+                0,
+                306,
+                "    return result;"
+            ],
+            [
+                303,
+                307,
+                "  }"
+            ],
+            [
+                0,
+                308,
+                ""
+            ],
+            [
+                0,
+                309,
+                "  result |= CompositorHitTestInfo::eVisibleToHitTest;"
+            ],
+            [
+                0,
+                310,
+                ""
+            ],
+            [
+                304,
+                311,
+                "  if ((mOverride & EventRegionsOverride::ForceDispatchToContent) ||"
+            ],
+            [
+                305,
+                312,
+                "      mEventRegions.mDispatchToContentHitRegion.Contains(point.x, point.y))"
+            ],
+            [
+                306,
+                313,
+                "  {"
+            ],
+            [
+                307,
+                0,
+                "    return HitTestResult::HitDispatchToContentRegion;"
+            ],
+            [
+                308,
+                0,
+                "  }"
+            ],
+            [
+                309,
+                0,
+                "  if (gfxPrefs::TouchActionEnabled()) {"
+            ],
+            [
+                0,
+                314,
+                "    result |= CompositorHitTestInfo::eDispatchToContent;"
+            ],
+            [
+                0,
+                315,
+                "  } else if (gfxPrefs::TouchActionEnabled()) {"
+            ],
+            [
+                310,
+                316,
+                "    if (mEventRegions.mNoActionRegion.Contains(point.x, point.y)) {"
+            ],
+            [
+                311,
+                0,
+                "      return HitTestResult::HitLayerTouchActionNone;"
+            ],
+            [
+                312,
+                0,
+                "    }"
+            ],
+            [
+                313,
+                0,
+                "    bool panX = mEventRegions.mHorizontalPanRegion.Contains(point.x, point.y);"
+            ],
+            [
+                314,
+                0,
+                "    bool panY = mEventRegions.mVerticalPanRegion.Contains(point.x, point.y);"
+            ],
+            [
+                315,
+                0,
+                "    if (panX && panY) {"
+            ],
+            [
+                316,
+                0,
+                "      return HitTestResult::HitLayerTouchActionPanXY;"
+            ],
+            [
+                317,
+                0,
+                "    } else if (panX) {"
+            ],
+            [
+                318,
+                0,
+                "      return HitTestResult::HitLayerTouchActionPanX;"
+            ],
+            [
+                319,
+                0,
+                "    } else if (panY) {"
+            ],
+            [
+                320,
+                0,
+                "      return HitTestResult::HitLayerTouchActionPanY;"
+            ],
+            [
+                0,
+                317,
+                "      // set all the touch-action flags as disabled"
+            ],
+            [
+                0,
+                318,
+                "      result |= CompositorHitTestInfo::eTouchActionMask;"
+            ],
+            [
+                0,
+                319,
+                "    } else {"
+            ],
+            [
+                0,
+                320,
+                "      bool panX = mEventRegions.mHorizontalPanRegion.Contains(point.x, point.y);"
+            ],
+            [
+                0,
+                321,
+                "      bool panY = mEventRegions.mVerticalPanRegion.Contains(point.x, point.y);"
+            ],
+            [
+                0,
+                322,
+                "      if (panX && panY) {"
+            ],
+            [
+                0,
+                323,
+                "        // touch-action: pan-x pan-y"
+            ],
+            [
+                0,
+                324,
+                "        result |= CompositorHitTestInfo::eTouchActionDoubleTapZoomDisabled"
+            ],
+            [
+                0,
+                325,
+                "                | CompositorHitTestInfo::eTouchActionPinchZoomDisabled;"
+            ],
+            [
+                0,
+                326,
+                "      } else if (panX) {"
+            ],
+            [
+                0,
+                327,
+                "        // touch-action: pan-x"
+            ],
+            [
+                0,
+                328,
+                "        result |= CompositorHitTestInfo::eTouchActionPanYDisabled"
+            ],
+            [
+                0,
+                329,
+                "                | CompositorHitTestInfo::eTouchActionPinchZoomDisabled"
+            ],
+            [
+                0,
+                330,
+                "                | CompositorHitTestInfo::eTouchActionDoubleTapZoomDisabled;"
+            ],
+            [
+                0,
+                331,
+                "      } else if (panY) {"
+            ],
+            [
+                0,
+                332,
+                "        // touch-action: pan-y"
+            ],
+            [
+                0,
+                333,
+                "        result |= CompositorHitTestInfo::eTouchActionPanXDisabled"
+            ],
+            [
+                0,
+                334,
+                "                | CompositorHitTestInfo::eTouchActionPinchZoomDisabled"
+            ],
+            [
+                0,
+                335,
+                "                | CompositorHitTestInfo::eTouchActionDoubleTapZoomDisabled;"
+            ],
+            [
+                0,
+                336,
+                "      } // else we're in the touch-action: auto or touch-action: manipulation"
+            ],
+            [
+                0,
+                337,
+                "        // cases and we'll allow all actions. Technically we shouldn't allow"
+            ],
+            [
+                0,
+                338,
+                "        // double-tap zooming in the manipulation case but apparently this has"
+            ],
+            [
+                0,
+                339,
+                "        // been broken since the dawn of time."
+            ],
+            [
+                321,
+                340,
+                "    }"
+            ],
+            [
+                322,
+                341,
+                "  }"
+            ],
+            [
+                323,
+                0,
+                "  return HitTestResult::HitLayer;"
+            ],
+            [
+                0,
+                342,
+                ""
+            ],
+            [
+                0,
+                343,
+                "  // The scrollbar flags are set at the call site in GetAPZCAtPoint, because"
+            ],
+            [
+                0,
+                344,
+                "  // those require walking up the tree to see if we are contained inside a"
+            ],
+            [
+                0,
+                345,
+                "  // scrollbar or scrollthumb, and we do that there anyway to get the scrollbar"
+            ],
+            [
+                0,
+                346,
+                "  // node."
+            ],
+            [
+                0,
+                347,
+                ""
+            ],
+            [
+                0,
+                348,
+                "  return result;"
+            ],
+            [
+                324,
+                349,
+                "}"
+            ],
+            [
+                325,
+                350,
+                ""
+            ],
+            [
+                326,
+                351,
+                "EventRegionsOverride"
+            ],
+            [
+                327,
+                352,
+                "HitTestingTreeNode::GetEventRegionsOverride() const"
+            ],
+            [
+                328,
+                353,
+                "{"
+            ],
+            [
+                329,
+                354,
+                "  return mOverride;"
+            ],
+            [
+                330,
+                355,
+                "}"
+            ],
+            [
+                331,
+                356,
+                ""
+            ]
+        ]
+    },
+    {
+        "new": false,
+        "deleted": false,
+        "renamed_from": null,
+        "filename": "gfx/layers/apz/src/HitTestingTreeNode.h",
+        "binary": false,
+        "count_add": 2,
+        "count_del": 2,
+        "lines": [
+            [
+                2,
+                2,
+                "/* vim: set ts=8 sts=2 et sw=2 tw=80: */"
+            ],
+            [
+                3,
+                3,
+                "/* This Source Code Form is subject to the terms of the Mozilla Public"
+            ],
+            [
+                4,
+                4,
+                " * License, v. 2.0. If a copy of the MPL was not distributed with this"
+            ],
+            [
+                5,
+                5,
+                " * file, You can obtain one at http://mozilla.org/MPL/2.0/. */"
+            ],
+            [
+                6,
+                6,
+                ""
+            ],
+            [
+                7,
+                7,
+                "#ifndef mozilla_layers_HitTestingTreeNode_h"
+            ],
+            [
+                8,
+                8,
+                "#define mozilla_layers_HitTestingTreeNode_h"
+            ],
+            [
+                9,
+                9,
+                ""
+            ],
+            [
+                10,
+                0,
+                "#include \"APZUtils.h\"                       // for HitTestResult"
+            ],
+            [
+                11,
+                10,
+                "#include \"FrameMetrics.h\"                   // for ScrollableLayerGuid"
+            ],
+            [
+                12,
+                11,
+                "#include \"Layers.h\""
+            ],
+            [
+                0,
+                12,
+                "#include \"mozilla/gfx/CompositorHitTestInfo.h\""
+            ],
+            [
+                13,
+                13,
+                "#include \"mozilla/gfx/Matrix.h\"             // for Matrix4x4"
+            ],
+            [
+                14,
+                14,
+                "#include \"mozilla/layers/LayersTypes.h\"     // for EventRegions"
+            ],
+            [
+                15,
+                15,
+                "#include \"mozilla/Maybe.h\"                  // for Maybe"
+            ],
+            [
+                16,
+                16,
+                "#include \"mozilla/RefPtr.h\"               // for nsRefPtr"
+            ],
+            [
+                17,
+                17,
+                ""
+            ],
+            [
+                18,
+                18,
+                "namespace mozilla {"
+            ],
+            [
+                19,
+                19,
+                "namespace layers {"
+            ],
+            [
+                20,
+                20,
+                ""
+            ],
+            [
+                114,
+                114,
+                ""
+            ],
+            [
+                115,
+                115,
+                "  /* Convert |aPoint| into the LayerPixel space for the layer corresponding to"
+            ],
+            [
+                116,
+                116,
+                "   * this node. |aTransform| is the complete (content + async) transform for"
+            ],
+            [
+                117,
+                117,
+                "   * this node. */"
+            ],
+            [
+                118,
+                118,
+                "  Maybe<LayerPoint> Untransform(const ParentLayerPoint& aPoint,"
+            ],
+            [
+                119,
+                119,
+                "                                const LayerToParentLayerMatrix4x4& aTransform) const;"
+            ],
+            [
+                120,
+                120,
+                "  /* Assuming aPoint is inside the clip region for this node, check which of the"
+            ],
+            [
+                121,
+                121,
+                "   * event region spaces it falls inside. */"
+            ],
+            [
+                122,
+                0,
+                "  HitTestResult HitTest(const LayerPoint& aPoint) const;"
+            ],
+            [
+                0,
+                122,
+                "  gfx::CompositorHitTestInfo HitTest(const LayerPoint& aPoint) const;"
+            ],
+            [
+                123,
+                123,
+                "  /* Returns the mOverride flag. */"
+            ],
+            [
+                124,
+                124,
+                "  EventRegionsOverride GetEventRegionsOverride() const;"
+            ],
+            [
+                125,
+                125,
+                "  const CSSTransformMatrix& GetTransform() const;"
+            ],
+            [
+                126,
+                126,
+                "  const LayerIntRegion& GetVisibleRegion() const;"
+            ],
+            [
+                127,
+                127,
+                ""
+            ],
+            [
+                128,
+                128,
+                "  /* Debug helpers */"
+            ],
+            [
+                129,
+                129,
+                "  void Dump(const char* aPrefix = \"\") const;"
+            ],
+            [
+                130,
+                130,
+                ""
+            ]
+        ]
+    },
+    {
+        "new": false,
+        "deleted": false,
+        "renamed_from": null,
+        "filename": "gfx/layers/apz/test/gtest/TestEventRegions.cpp",
+        "binary": false,
+        "count_add": 5,
+        "count_del": 5,
+        "lines": [
+            [
+                231,
+                231,
+                ""
+            ],
+            [
+                232,
+                232,
+                "  manager->UpdateHitTestingTree(0, root, false, 0, 0);"
+            ],
+            [
+                233,
+                233,
+                ""
+            ],
+            [
+                234,
+                234,
+                "  TestAsyncPanZoomController* parent = ApzcOf(layers[1]);"
+            ],
+            [
+                235,
+                235,
+                "  TestAsyncPanZoomController* child = ApzcOf(layers[2]);"
+            ],
+            [
+                236,
+                236,
+                ""
+            ],
+            [
+                237,
+                237,
+                "  ApzcPanNoFling(parent, 75, 25);"
+            ],
+            [
+                238,
+                238,
+                ""
+            ],
+            [
+                239,
+                0,
+                "  HitTestResult result;"
+            ],
+            [
+                0,
+                239,
+                "  gfx::CompositorHitTestInfo result;"
+            ],
+            [
+                240,
+                240,
+                "  RefPtr<AsyncPanZoomController> hit = manager->GetTargetAPZC(ScreenPoint(50, 75), &result);"
+            ],
+            [
+                241,
+                241,
+                "  EXPECT_EQ(child, hit.get());"
+            ],
+            [
+                242,
+                0,
+                "  EXPECT_EQ(HitTestResult::HitLayer, result);"
+            ],
+            [
+                0,
+                242,
+                "  EXPECT_EQ(CompositorHitTestInfo::eVisibleToHitTest, result);"
+            ],
+            [
+                243,
+                243,
+                "}"
+            ],
+            [
+                244,
+                244,
+                ""
+            ],
+            [
+                245,
+                245,
+                "TEST_F(APZEventRegionsTester, Bug1119497) {"
+            ],
+            [
+                246,
+                246,
+                "  CreateBug1119497LayerTree();"
+            ],
+            [
+                247,
+                247,
+                ""
+            ],
+            [
+                248,
+                0,
+                "  HitTestResult result;"
+            ],
+            [
+                0,
+                248,
+                "  gfx::CompositorHitTestInfo result;"
+            ],
+            [
+                249,
+                249,
+                "  RefPtr<AsyncPanZoomController> hit = manager->GetTargetAPZC(ScreenPoint(50, 50), &result);"
+            ],
+            [
+                250,
+                0,
+                "  // We should hit layers[2], so |result| will be HitLayer but there's no"
+            ],
+            [
+                0,
+                250,
+                "  // We should hit layers[2], so |result| will be eVisibleToHitTest but there's no"
+            ],
+            [
+                251,
+                251,
+                "  // actual APZC on layers[2], so it will be the APZC of the root layer."
+            ],
+            [
+                252,
+                252,
+                "  EXPECT_EQ(ApzcOf(layers[0]), hit.get());"
+            ],
+            [
+                253,
+                0,
+                "  EXPECT_EQ(HitTestResult::HitLayer, result);"
+            ],
+            [
+                0,
+                253,
+                "  EXPECT_EQ(CompositorHitTestInfo::eVisibleToHitTest, result);"
+            ],
+            [
+                254,
+                254,
+                "}"
+            ],
+            [
+                255,
+                255,
+                ""
+            ],
+            [
+                256,
+                256,
+                "TEST_F(APZEventRegionsTester, Bug1117712) {"
+            ],
+            [
+                257,
+                257,
+                "  CreateBug1117712LayerTree();"
+            ],
+            [
+                258,
+                258,
+                ""
+            ],
+            [
+                259,
+                259,
+                "  TestAsyncPanZoomController* apzc2 = ApzcOf(layers[2]);"
+            ],
+            [
+                260,
+                260,
+                ""
+            ],
+            [
+                261,
+                261,
+                "  // These touch events should hit the dispatch-to-content region of layers[3]"
+            ]
+        ]
+    }
+]

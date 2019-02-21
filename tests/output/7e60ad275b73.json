@@ -1,0 +1,1590 @@
+[
+    {
+        "new": false,
+        "deleted": false,
+        "renamed_from": null,
+        "filename": "gfx/config/gfxVars.h",
+        "binary": false,
+        "count_add": 1,
+        "count_del": 0,
+        "lines": [
+            [
+                31,
+                31,
+                "  _(OffscreenFormat,            gfxImageFormat,   mozilla::gfx::SurfaceFormat::X8R8G8B8_UINT32) \\"
+            ],
+            [
+                32,
+                32,
+                "  _(RequiresAcceleratedGLContextForCompositorOGL, bool, false)          \\"
+            ],
+            [
+                33,
+                33,
+                "  _(CanUseHardwareVideoDecoding, bool,            false)                \\"
+            ],
+            [
+                34,
+                34,
+                "  _(PDMWMFDisableD3D11Dlls,     nsCString,        nsCString())          \\"
+            ],
+            [
+                35,
+                35,
+                "  _(PDMWMFDisableD3D9Dlls,      nsCString,        nsCString())          \\"
+            ],
+            [
+                36,
+                36,
+                "  _(DXInterop2Blocked,          bool,             false)                \\"
+            ],
+            [
+                37,
+                37,
+                "  _(UseWebRender,               bool,             false)                \\"
+            ],
+            [
+                38,
+                38,
+                "  _(UseWebRenderANGLE,          bool,             false)                \\"
+            ],
+            [
+                0,
+                39,
+                "  _(UseWebRenderProgramBinary,  bool,             false)                \\"
+            ],
+            [
+                39,
+                40,
+                "  _(WebRenderDebugFlags,        int32_t,          0)                    \\"
+            ],
+            [
+                40,
+                41,
+                "  _(ScreenDepth,                int32_t,          0)                    \\"
+            ],
+            [
+                41,
+                42,
+                "  _(GREDirectory,               nsCString,        nsCString())          \\"
+            ],
+            [
+                42,
+                43,
+                "  _(UseOMTP,                    bool,             false)                \\"
+            ],
+            [
+                43,
+                44,
+                "  _(AllowD3D11KeyedMutex,       bool,             false)                \\"
+            ],
+            [
+                44,
+                45,
+                ""
+            ],
+            [
+                45,
+                46,
+                "  /* Add new entries above this line. */"
+            ],
+            [
+                46,
+                47,
+                ""
+            ]
+        ]
+    },
+    {
+        "new": false,
+        "deleted": false,
+        "renamed_from": null,
+        "filename": "gfx/thebes/gfxPlatform.cpp",
+        "binary": false,
+        "count_add": 4,
+        "count_del": 0,
+        "lines": [
+            [
+                2548,
+                2548,
+                "        \"ANGLE is disabled\","
+            ],
+            [
+                2549,
+                2549,
+                "        NS_LITERAL_CSTRING(\"FEATURE_FAILURE_ANGLE_DISABLED\"));"
+            ],
+            [
+                2550,
+                2550,
+                "    } else {"
+            ],
+            [
+                2551,
+                2551,
+                "      gfxVars::SetUseWebRenderANGLE(gfxConfig::IsEnabled(Feature::WEBRENDER));"
+            ],
+            [
+                2552,
+                2552,
+                "    }"
+            ],
+            [
+                2553,
+                2553,
+                "  }"
+            ],
+            [
+                2554,
+                2554,
+                "#endif"
+            ],
+            [
+                2555,
+                2555,
+                ""
+            ],
+            [
+                0,
+                2556,
+                "  if (Preferences::GetBool(\"gfx.webrender.program-binary\", false)) {"
+            ],
+            [
+                0,
+                2557,
+                "    gfx::gfxVars::SetUseWebRenderProgramBinary(gfxConfig::IsEnabled(Feature::WEBRENDER));"
+            ],
+            [
+                0,
+                2558,
+                "  }"
+            ],
+            [
+                0,
+                2559,
+                ""
+            ],
+            [
+                2556,
+                2560,
+                "#ifdef MOZ_WIDGET_ANDROID"
+            ],
+            [
+                2557,
+                2561,
+                "  featureWebRender.ForceDisable("
+            ],
+            [
+                2558,
+                2562,
+                "    FeatureStatus::Unavailable,"
+            ],
+            [
+                2559,
+                2563,
+                "    \"WebRender not ready for use on Android\","
+            ],
+            [
+                2560,
+                2564,
+                "    NS_LITERAL_CSTRING(\"FEATURE_FAILURE_ANDROID\"));"
+            ],
+            [
+                2561,
+                2565,
+                "#endif"
+            ],
+            [
+                2562,
+                2566,
+                ""
+            ],
+            [
+                2563,
+                2567,
+                "  // gfxFeature is not usable in the GPU process, so we use gfxVars to transmit this feature"
+            ]
+        ]
+    },
+    {
+        "new": false,
+        "deleted": false,
+        "renamed_from": null,
+        "filename": "gfx/webrender_bindings/RenderThread.cpp",
+        "binary": false,
+        "count_add": 21,
+        "count_del": 0,
+        "lines": [
+            [
+                417,
+                417,
+                "{"
+            ],
+            [
+                418,
+                418,
+                "  MOZ_ASSERT(IsInRenderThread());"
+            ],
+            [
+                419,
+                419,
+                ""
+            ],
+            [
+                420,
+                420,
+                "  MutexAutoLock lock(mRenderTextureMapLock);"
+            ],
+            [
+                421,
+                421,
+                "  MOZ_ASSERT(mRenderTextures.GetWeak(aExternalImageId.mHandle));"
+            ],
+            [
+                422,
+                422,
+                "  return mRenderTextures.GetWeak(aExternalImageId.mHandle);"
+            ],
+            [
+                423,
+                423,
+                "}"
+            ],
+            [
+                424,
+                424,
+                ""
+            ],
+            [
+                0,
+                425,
+                "WebRenderProgramCache*"
+            ],
+            [
+                0,
+                426,
+                "RenderThread::ProgramCache()"
+            ],
+            [
+                0,
+                427,
+                "{"
+            ],
+            [
+                0,
+                428,
+                "  MOZ_ASSERT(IsInRenderThread());"
+            ],
+            [
+                0,
+                429,
+                ""
+            ],
+            [
+                0,
+                430,
+                "  if (!mProgramCache) {"
+            ],
+            [
+                0,
+                431,
+                "    mProgramCache = MakeUnique<WebRenderProgramCache>();"
+            ],
+            [
+                0,
+                432,
+                "  }"
+            ],
+            [
+                0,
+                433,
+                "  return mProgramCache.get();"
+            ],
+            [
+                0,
+                434,
+                "}"
+            ],
+            [
+                0,
+                435,
+                ""
+            ],
+            [
+                425,
+                436,
+                "WebRenderThreadPool::WebRenderThreadPool()"
+            ],
+            [
+                426,
+                437,
+                "{"
+            ],
+            [
+                427,
+                438,
+                "  mThreadPool = wr_thread_pool_new();"
+            ],
+            [
+                428,
+                439,
+                "}"
+            ],
+            [
+                429,
+                440,
+                ""
+            ],
+            [
+                430,
+                441,
+                "WebRenderThreadPool::~WebRenderThreadPool()"
+            ],
+            [
+                431,
+                442,
+                "{"
+            ],
+            [
+                432,
+                443,
+                "  wr_thread_pool_delete(mThreadPool);"
+            ],
+            [
+                433,
+                444,
+                "}"
+            ],
+            [
+                434,
+                445,
+                ""
+            ],
+            [
+                0,
+                446,
+                "WebRenderProgramCache::WebRenderProgramCache()"
+            ],
+            [
+                0,
+                447,
+                "{"
+            ],
+            [
+                0,
+                448,
+                "  mProgramCache = wr_program_cache_new();"
+            ],
+            [
+                0,
+                449,
+                "}"
+            ],
+            [
+                0,
+                450,
+                ""
+            ],
+            [
+                0,
+                451,
+                "WebRenderProgramCache::~WebRenderProgramCache()"
+            ],
+            [
+                0,
+                452,
+                "{"
+            ],
+            [
+                0,
+                453,
+                "  wr_program_cache_delete(mProgramCache);"
+            ],
+            [
+                0,
+                454,
+                "}"
+            ],
+            [
+                0,
+                455,
+                ""
+            ],
+            [
+                435,
+                456,
+                "} // namespace wr"
+            ],
+            [
+                436,
+                457,
+                "} // namespace mozilla"
+            ],
+            [
+                437,
+                458,
+                ""
+            ],
+            [
+                438,
+                459,
+                "extern \"C\" {"
+            ],
+            [
+                439,
+                460,
+                ""
+            ],
+            [
+                440,
+                461,
+                "void wr_notifier_new_frame_ready(mozilla::wr::WrWindowId aWindowId)"
+            ],
+            [
+                441,
+                462,
+                "{"
+            ],
+            [
+                442,
+                463,
+                "  mozilla::wr::RenderThread::Get()->IncRenderingFrameCount(aWindowId);"
+            ]
+        ]
+    },
+    {
+        "new": false,
+        "deleted": false,
+        "renamed_from": null,
+        "filename": "gfx/webrender_bindings/RenderThread.h",
+        "binary": false,
+        "count_add": 15,
+        "count_del": 0,
+        "lines": [
+            [
+                35,
+                35,
+                "  ~WebRenderThreadPool();"
+            ],
+            [
+                36,
+                36,
+                ""
+            ],
+            [
+                37,
+                37,
+                "  wr::WrThreadPool* Raw() { return mThreadPool; }"
+            ],
+            [
+                38,
+                38,
+                ""
+            ],
+            [
+                39,
+                39,
+                "protected:"
+            ],
+            [
+                40,
+                40,
+                "  wr::WrThreadPool* mThreadPool;"
+            ],
+            [
+                41,
+                41,
+                "};"
+            ],
+            [
+                42,
+                42,
+                ""
+            ],
+            [
+                0,
+                43,
+                "class WebRenderProgramCache {"
+            ],
+            [
+                0,
+                44,
+                "public:"
+            ],
+            [
+                0,
+                45,
+                "  WebRenderProgramCache();"
+            ],
+            [
+                0,
+                46,
+                ""
+            ],
+            [
+                0,
+                47,
+                "  ~WebRenderProgramCache();"
+            ],
+            [
+                0,
+                48,
+                ""
+            ],
+            [
+                0,
+                49,
+                "  wr::WrProgramCache* Raw() { return mProgramCache; }"
+            ],
+            [
+                0,
+                50,
+                ""
+            ],
+            [
+                0,
+                51,
+                "protected:"
+            ],
+            [
+                0,
+                52,
+                "  wr::WrProgramCache* mProgramCache;"
+            ],
+            [
+                0,
+                53,
+                "};"
+            ],
+            [
+                43,
+                54,
+                ""
+            ],
+            [
+                44,
+                55,
+                "/// Base class for an event that can be scheduled to run on the render thread."
+            ],
+            [
+                45,
+                56,
+                "///"
+            ],
+            [
+                46,
+                57,
+                "/// The event can be passed through the same channels as regular WebRender messages"
+            ],
+            [
+                47,
+                58,
+                "/// to preserve ordering."
+            ],
+            [
+                48,
+                59,
+                "class RendererEvent"
+            ],
+            [
+                49,
+                60,
+                "{"
+            ],
+            [
+                50,
+                61,
+                "public:"
+            ],
+            [
+                138,
+                149,
+                "  /// Can be called from any thread."
+            ],
+            [
+                139,
+                150,
+                "  void IncRenderingFrameCount(wr::WindowId aWindowId);"
+            ],
+            [
+                140,
+                151,
+                "  /// Can be called from any thread."
+            ],
+            [
+                141,
+                152,
+                "  void DecPendingFrameCount(wr::WindowId aWindowId);"
+            ],
+            [
+                142,
+                153,
+                ""
+            ],
+            [
+                143,
+                154,
+                "  /// Can be called from any thread."
+            ],
+            [
+                144,
+                155,
+                "  WebRenderThreadPool& ThreadPool() { return mThreadPool; }"
+            ],
+            [
+                145,
+                156,
+                ""
+            ],
+            [
+                0,
+                157,
+                "  /// Can only be called from the render thread."
+            ],
+            [
+                0,
+                158,
+                "  WebRenderProgramCache* ProgramCache();"
+            ],
+            [
+                0,
+                159,
+                ""
+            ],
+            [
+                146,
+                160,
+                "private:"
+            ],
+            [
+                147,
+                161,
+                "  explicit RenderThread(base::Thread* aThread);"
+            ],
+            [
+                148,
+                162,
+                ""
+            ],
+            [
+                149,
+                163,
+                "  void DeferredRenderTextureHostDestroy(RefPtr<RenderTextureHost> aTexture);"
+            ],
+            [
+                150,
+                164,
+                "  void ShutDownTask(layers::SynchronousTask* aTask);"
+            ],
+            [
+                151,
+                165,
+                ""
+            ],
+            [
+                152,
+                166,
+                "  ~RenderThread();"
+            ],
+            [
+                153,
+                167,
+                ""
+            ],
+            [
+                154,
+                168,
+                "  base::Thread* const mThread;"
+            ],
+            [
+                155,
+                169,
+                ""
+            ],
+            [
+                156,
+                170,
+                "  WebRenderThreadPool mThreadPool;"
+            ],
+            [
+                0,
+                171,
+                "  UniquePtr<WebRenderProgramCache> mProgramCache;"
+            ],
+            [
+                157,
+                172,
+                ""
+            ],
+            [
+                158,
+                173,
+                "  std::map<wr::WindowId, UniquePtr<RendererOGL>> mRenderers;"
+            ],
+            [
+                159,
+                174,
+                ""
+            ],
+            [
+                160,
+                175,
+                "  struct WindowInfo {"
+            ],
+            [
+                161,
+                176,
+                "    bool mIsDestroyed = false;"
+            ],
+            [
+                162,
+                177,
+                "    int64_t mPendingCount = 0;"
+            ],
+            [
+                163,
+                178,
+                "    int64_t mRenderingCount = 0;"
+            ],
+            [
+                164,
+                179,
+                "  };"
+            ]
+        ]
+    },
+    {
+        "new": false,
+        "deleted": false,
+        "renamed_from": null,
+        "filename": "gfx/webrender_bindings/WebRenderAPI.cpp",
+        "binary": false,
+        "count_add": 3,
+        "count_del": 0,
+        "lines": [
+            [
+                85,
+                85,
+                "                                            Move(gl),"
+            ],
+            [
+                86,
+                86,
+                "                                            Move(mCompositorWidget),"
+            ],
+            [
+                87,
+                87,
+                "                                            aWindowId,"
+            ],
+            [
+                88,
+                88,
+                "                                            wrRenderer,"
+            ],
+            [
+                89,
+                89,
+                "                                            mBridge);"
+            ],
+            [
+                90,
+                90,
+                "    if (wrRenderer && renderer) {"
+            ],
+            [
+                91,
+                91,
+                "      wr::WrExternalImageHandler handler = renderer->GetExternalImageHandler();"
+            ],
+            [
+                92,
+                92,
+                "      wr_renderer_set_external_image_handler(wrRenderer, &handler);"
+            ],
+            [
+                0,
+                93,
+                "      if (gfx::gfxVars::UseWebRenderProgramBinary()) {"
+            ],
+            [
+                0,
+                94,
+                "        wr_renderer_update_program_cache(wrRenderer, aRenderThread.ProgramCache()->Raw());"
+            ],
+            [
+                0,
+                95,
+                "      }"
+            ],
+            [
+                93,
+                96,
+                "    }"
+            ],
+            [
+                94,
+                97,
+                ""
+            ],
+            [
+                95,
+                98,
+                "    if (renderer) {"
+            ],
+            [
+                96,
+                99,
+                "      layers::SyncObjectHost* syncObj = renderer->GetSyncObject();"
+            ],
+            [
+                97,
+                100,
+                "      if (syncObj) {"
+            ],
+            [
+                98,
+                101,
+                "        *mSyncHandle = syncObj->GetSyncHandle();"
+            ],
+            [
+                99,
+                102,
+                "      }"
+            ],
+            [
+                100,
+                103,
+                "    }"
+            ]
+        ]
+    },
+    {
+        "new": false,
+        "deleted": false,
+        "renamed_from": null,
+        "filename": "gfx/webrender_bindings/src/bindings.rs",
+        "binary": false,
+        "count_add": 22,
+        "count_del": 0,
+        "lines": [
+            [
+                1,
+                1,
+                "use std::ffi::{CStr, CString};"
+            ],
+            [
+                2,
+                2,
+                "use std::{mem, slice};"
+            ],
+            [
+                3,
+                3,
+                "use std::path::PathBuf;"
+            ],
+            [
+                4,
+                4,
+                "use std::ptr;"
+            ],
+            [
+                0,
+                5,
+                "use std::rc::Rc;"
+            ],
+            [
+                5,
+                6,
+                "use std::sync::Arc;"
+            ],
+            [
+                6,
+                7,
+                "use std::os::raw::{c_void, c_char, c_float};"
+            ],
+            [
+                7,
+                8,
+                "use gleam::gl;"
+            ],
+            [
+                8,
+                9,
+                ""
+            ],
+            [
+                9,
+                10,
+                "use webrender::api::*;"
+            ],
+            [
+                10,
+                11,
+                "use webrender::{ReadPixelsFormat, Renderer, RendererOptions, ThreadListener};"
+            ],
+            [
+                11,
+                12,
+                "use webrender::{ExternalImage, ExternalImageHandler, ExternalImageSource};"
+            ],
+            [
+                12,
+                13,
+                "use webrender::DebugFlags;"
+            ],
+            [
+                13,
+                14,
+                "use webrender::{ApiRecordingReceiver, BinaryRecorder};"
+            ],
+            [
+                0,
+                15,
+                "use webrender::ProgramCache;"
+            ],
+            [
+                14,
+                16,
+                "use thread_profiler::register_thread_with_profiler;"
+            ],
+            [
+                15,
+                17,
+                "use moz2d_renderer::Moz2dImageRenderer;"
+            ],
+            [
+                16,
+                18,
+                "use app_units::Au;"
+            ],
+            [
+                17,
+                19,
+                "use rayon;"
+            ],
+            [
+                18,
+                20,
+                "use euclid::SideOffsets2D;"
+            ],
+            [
+                19,
+                21,
+                "use log::{set_logger, shutdown_logger, LogLevelFilter, Log, LogLevel, LogMetadata, LogRecord};"
+            ],
+            [
+                20,
+                22,
+                ""
+            ],
+            [
+                21,
+                23,
+                "#[cfg(target_os = \"windows\")]"
+            ],
+            [
+                655,
+                657,
+                "}"
+            ],
+            [
+                656,
+                658,
+                ""
+            ],
+            [
+                657,
+                659,
+                "/// cbindgen:postfix=WR_DESTRUCTOR_SAFE_FUNC"
+            ],
+            [
+                658,
+                660,
+                "#[no_mangle]"
+            ],
+            [
+                659,
+                661,
+                "pub unsafe extern \"C\" fn wr_thread_pool_delete(thread_pool: *mut WrThreadPool) {"
+            ],
+            [
+                660,
+                662,
+                "    Box::from_raw(thread_pool);"
+            ],
+            [
+                661,
+                663,
+                "}"
+            ],
+            [
+                662,
+                664,
+                ""
+            ],
+            [
+                0,
+                665,
+                "pub struct WrProgramCache(Rc<ProgramCache>);"
+            ],
+            [
+                0,
+                666,
+                ""
+            ],
+            [
+                0,
+                667,
+                "#[no_mangle]"
+            ],
+            [
+                0,
+                668,
+                "pub unsafe extern \"C\" fn wr_program_cache_new() -> *mut WrProgramCache {"
+            ],
+            [
+                0,
+                669,
+                "    let program_cache = ProgramCache::new();"
+            ],
+            [
+                0,
+                670,
+                "    Box::into_raw(Box::new(WrProgramCache(program_cache)))"
+            ],
+            [
+                0,
+                671,
+                "}"
+            ],
+            [
+                0,
+                672,
+                ""
+            ],
+            [
+                0,
+                673,
+                "/// cbindgen:postfix=WR_DESTRUCTOR_SAFE_FUNC"
+            ],
+            [
+                0,
+                674,
+                "#[no_mangle]"
+            ],
+            [
+                0,
+                675,
+                "pub unsafe extern \"C\" fn wr_program_cache_delete(program_cache: *mut WrProgramCache) {"
+            ],
+            [
+                0,
+                676,
+                "    Rc::from_raw(program_cache);"
+            ],
+            [
+                0,
+                677,
+                "}"
+            ],
+            [
+                0,
+                678,
+                ""
+            ],
+            [
+                0,
+                679,
+                "#[no_mangle]"
+            ],
+            [
+                0,
+                680,
+                "pub extern \"C\" fn wr_renderer_update_program_cache(renderer: &mut Renderer, program_cache: &mut WrProgramCache) {"
+            ],
+            [
+                0,
+                681,
+                "    let program_cache = Rc::clone(&program_cache.0);"
+            ],
+            [
+                0,
+                682,
+                "    renderer.update_program_cache(program_cache);"
+            ],
+            [
+                0,
+                683,
+                "}"
+            ],
+            [
+                0,
+                684,
+                ""
+            ],
+            [
+                663,
+                685,
+                "// Call MakeCurrent before this."
+            ],
+            [
+                664,
+                686,
+                "#[no_mangle]"
+            ],
+            [
+                665,
+                687,
+                "pub extern \"C\" fn wr_window_new(window_id: WrWindowId,"
+            ],
+            [
+                666,
+                688,
+                "                                window_width: u32,"
+            ],
+            [
+                667,
+                689,
+                "                                window_height: u32,"
+            ],
+            [
+                668,
+                690,
+                "                                gl_context: *mut c_void,"
+            ],
+            [
+                669,
+                691,
+                "                                thread_pool: *mut WrThreadPool,"
+            ],
+            [
+                670,
+                692,
+                "                                out_handle: &mut *mut DocumentHandle,"
+            ]
+        ]
+    },
+    {
+        "new": false,
+        "deleted": false,
+        "renamed_from": null,
+        "filename": "gfx/webrender_bindings/webrender_ffi_generated.h",
+        "binary": false,
+        "count_add": 15,
+        "count_del": 0,
+        "lines": [
+            [
+                245,
+                245,
+                "// RenderBackend."
+            ],
+            [
+                246,
+                246,
+                "struct Renderer;"
+            ],
+            [
+                247,
+                247,
+                ""
+            ],
+            [
+                248,
+                248,
+                "// The resource updates for a given transaction (they must be applied in the same frame)."
+            ],
+            [
+                249,
+                249,
+                "struct ResourceUpdates;"
+            ],
+            [
+                250,
+                250,
+                ""
+            ],
+            [
+                251,
+                251,
+                "struct Vec_u8;"
+            ],
+            [
+                252,
+                252,
+                ""
+            ],
+            [
+                0,
+                253,
+                "struct WrProgramCache;"
+            ],
+            [
+                0,
+                254,
+                ""
+            ],
+            [
+                253,
+                255,
+                "struct WrRenderedEpochs;"
+            ],
+            [
+                254,
+                256,
+                ""
+            ],
+            [
+                255,
+                257,
+                "struct WrState;"
+            ],
+            [
+                256,
+                258,
+                ""
+            ],
+            [
+                257,
+                259,
+                "struct WrThreadPool;"
+            ],
+            [
+                258,
+                260,
+                ""
+            ],
+            [
+                259,
+                261,
+                "struct IdNamespace {"
+            ],
+            [
+                260,
+                262,
+                "  uint32_t mHandle;"
+            ],
+            [
+                1405,
+                1407,
+                "                                       size_t aRawEvent);"
+            ],
+            [
+                1406,
+                1408,
+                ""
+            ],
+            [
+                1407,
+                1409,
+                "extern void wr_notifier_new_frame_ready(WrWindowId aWindowId);"
+            ],
+            [
+                1408,
+                1410,
+                ""
+            ],
+            [
+                1409,
+                1411,
+                "extern void wr_notifier_new_scroll_frame_ready(WrWindowId aWindowId,"
+            ],
+            [
+                1410,
+                1412,
+                "                                               bool aCompositeNeeded);"
+            ],
+            [
+                1411,
+                1413,
+                ""
+            ],
+            [
+                1412,
+                1414,
+                "WR_INLINE"
+            ],
+            [
+                0,
+                1415,
+                "void wr_program_cache_delete(WrProgramCache *aProgramCache)"
+            ],
+            [
+                0,
+                1416,
+                "WR_DESTRUCTOR_SAFE_FUNC;"
+            ],
+            [
+                0,
+                1417,
+                ""
+            ],
+            [
+                0,
+                1418,
+                "WR_INLINE"
+            ],
+            [
+                0,
+                1419,
+                "WrProgramCache *wr_program_cache_new()"
+            ],
+            [
+                0,
+                1420,
+                "WR_FUNC;"
+            ],
+            [
+                0,
+                1421,
+                ""
+            ],
+            [
+                0,
+                1422,
+                "WR_INLINE"
+            ],
+            [
+                1413,
+                1423,
+                "void wr_rendered_epochs_delete(WrRenderedEpochs *aPipelineEpochs)"
+            ],
+            [
+                1414,
+                1424,
+                "WR_DESTRUCTOR_SAFE_FUNC;"
+            ],
+            [
+                1415,
+                1425,
+                ""
+            ],
+            [
+                1416,
+                1426,
+                "WR_INLINE"
+            ],
+            [
+                1417,
+                1427,
+                "bool wr_rendered_epochs_next(WrRenderedEpochs *aPipelineEpochs,"
+            ],
+            [
+                1418,
+                1428,
+                "                             WrPipelineId *aOutPipeline,"
+            ],
+            [
+                1419,
+                1429,
+                "                             WrEpoch *aOutEpoch)"
+            ],
+            [
+                1420,
+                1430,
+                "WR_FUNC;"
+            ],
+            [
+                1461,
+                1471,
+                "                                            WrExternalImageHandler *aExternalImageHandler)"
+            ],
+            [
+                1462,
+                1472,
+                "WR_FUNC;"
+            ],
+            [
+                1463,
+                1473,
+                ""
+            ],
+            [
+                1464,
+                1474,
+                "WR_INLINE"
+            ],
+            [
+                1465,
+                1475,
+                "void wr_renderer_update(Renderer *aRenderer)"
+            ],
+            [
+                1466,
+                1476,
+                "WR_FUNC;"
+            ],
+            [
+                1467,
+                1477,
+                ""
+            ],
+            [
+                1468,
+                1478,
+                "WR_INLINE"
+            ],
+            [
+                0,
+                1479,
+                "void wr_renderer_update_program_cache(Renderer *aRenderer,"
+            ],
+            [
+                0,
+                1480,
+                "                                      WrProgramCache *aProgramCache)"
+            ],
+            [
+                0,
+                1481,
+                "WR_FUNC;"
+            ],
+            [
+                0,
+                1482,
+                ""
+            ],
+            [
+                0,
+                1483,
+                "WR_INLINE"
+            ],
+            [
+                1469,
+                1484,
+                "void wr_resource_updates_add_blob_image(ResourceUpdates *aResources,"
+            ],
+            [
+                1470,
+                1485,
+                "                                        WrImageKey aImageKey,"
+            ],
+            [
+                1471,
+                1486,
+                "                                        const WrImageDescriptor *aDescriptor,"
+            ],
+            [
+                1472,
+                1487,
+                "                                        WrVecU8 *aBytes)"
+            ],
+            [
+                1473,
+                1488,
+                "WR_FUNC;"
+            ],
+            [
+                1474,
+                1489,
+                ""
+            ],
+            [
+                1475,
+                1490,
+                "WR_INLINE"
+            ],
+            [
+                1476,
+                1491,
+                "void wr_resource_updates_add_external_image(ResourceUpdates *aResources,"
+            ]
+        ]
+    },
+    {
+        "new": false,
+        "deleted": false,
+        "renamed_from": null,
+        "filename": "modules/libpref/init/all.js",
+        "binary": false,
+        "count_add": 1,
+        "count_del": 0,
+        "lines": [
+            [
+                855,
+                855,
+                ""
+            ],
+            [
+                856,
+                856,
+                "#ifdef MOZ_ENABLE_WEBRENDER"
+            ],
+            [
+                857,
+                857,
+                "pref(\"gfx.webrender.enabled\", true);"
+            ],
+            [
+                858,
+                858,
+                "#else"
+            ],
+            [
+                859,
+                859,
+                "pref(\"gfx.webrender.enabled\", false);"
+            ],
+            [
+                860,
+                860,
+                "#endif"
+            ],
+            [
+                861,
+                861,
+                "#ifdef XP_WIN"
+            ],
+            [
+                862,
+                862,
+                "pref(\"gfx.webrender.force-angle\", true);"
+            ],
+            [
+                0,
+                863,
+                "pref(\"gfx.webrender.program-binary\", true);"
+            ],
+            [
+                863,
+                864,
+                "#endif"
+            ],
+            [
+                864,
+                865,
+                ""
+            ],
+            [
+                865,
+                866,
+                "pref(\"gfx.webrender.highlight-painted-layers\", false);"
+            ],
+            [
+                866,
+                867,
+                "pref(\"gfx.webrender.blob-images\", false);"
+            ],
+            [
+                867,
+                868,
+                ""
+            ],
+            [
+                868,
+                869,
+                "// WebRender debugging utilities."
+            ],
+            [
+                869,
+                870,
+                "pref(\"gfx.webrender.debug.texture-cache\", false);"
+            ],
+            [
+                870,
+                871,
+                "pref(\"gfx.webrender.debug.render-targets\", false);"
+            ]
+        ]
+    }
+]

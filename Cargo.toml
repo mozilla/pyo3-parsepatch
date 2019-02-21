@@ -1,0 +1,16 @@
+[package]
+name = "rs_parsepatch"
+version = "0.1.0"
+authors = ["calixteman <cdenizet@mozilla.com>"]
+edition = "2018"
+
+[lib]
+name = "rs_parsepatch"
+crate-type = ["cdylib"]
+
+[dependencies]
+parsepatch = "0.1.0"
+
+[dependencies.pyo3]
+version = "0.5.3"
+features = ["extension-module"]
