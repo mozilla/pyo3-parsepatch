@@ -49,7 +49,7 @@ impl<'a> PyPatch<'a> {
         let diffs: Vec<PyObject> = self
             .diffs
             .drain(..)
-            .map(|x| {
+            .map(move |x| {
                 x.diff.set_item("added", x.add).unwrap();
                 x.diff.set_item("deleted", x.del).unwrap();
                 x.diff.into_object(py)

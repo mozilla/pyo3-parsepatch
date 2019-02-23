@@ -55,7 +55,7 @@ impl<'a> PyPatch<'a> {
         let diffs: Vec<PyObject> = self
             .diffs
             .drain(..)
-            .map(|x| {
+            .map(move |x| {
                 x.diff.set_item("lines", x.lines.into_object(py)).unwrap();
                 x.diff.into_object(py)
             })
