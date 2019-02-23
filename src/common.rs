@@ -3,7 +3,14 @@ use pyo3::types::PyDict;
 use pyo3::Python;
 
 #[inline(always)]
-pub fn set_info(diff: &PyDict, old_name: &str, new_name: &str, op: FileOp, binary: bool, py: &Python) {
+pub fn set_info(
+    diff: &PyDict,
+    old_name: &str,
+    new_name: &str,
+    op: FileOp,
+    binary: bool,
+    py: &Python,
+) {
     match op {
         FileOp::New => {
             diff.set_item("new", true).unwrap();

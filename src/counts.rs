@@ -50,10 +50,11 @@ impl<'a> PyPatch<'a> {
             .diffs
             .drain(..)
             .map(|x| {
-                x.diff.set_item("count_add", x.add).unwrap();
-                x.diff.set_item("count_del", x.del).unwrap();
+                x.diff.set_item("added", x.add).unwrap();
+                x.diff.set_item("deleted", x.del).unwrap();
                 x.diff.into_object(py)
-            }).collect();
+            })
+            .collect();
 
         Ok(diffs.into_object(self.py))
     }

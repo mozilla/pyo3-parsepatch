@@ -1,11 +1,12 @@
 use parsepatch::{Diff, FileOp, Patch};
-use pyo3::types::{PyBytes, PyDict, PyTuple};
+use pyo3::types::PyDict;
 use pyo3::{IntoPyObject, PyObject, PyResult, Python};
 
 pub struct PyDiff<'a> {
     py: Python<'a>,
     diff: &'a PyDict,
-    lines: Vec<PyObject>,
+    add: Vec<u64>,
+    del: Vec<u64>,
 }
 
 impl<'a> PyDiff<'a> {
@@ -13,15 +14,8 @@ impl<'a> PyDiff<'a> {
         PyDiff {
             py,
             diff: PyDict::new(py),
-            lines: Vec::new(),
-        }
-    }
-
-    fn get_line(&self, line: u64) -> PyObject {
-        if line == 0 {
-            self.py.None()
-        } else {
-            line.into_object(self.py)
+            add: Vec::new(),
+            del: Vec::new(),
         }
     }
 }
@@ -56,10 +50,12 @@ impl<'a> PyPatch<'a> {
             .diffs
             .drain(..)
             .map(|x| {
-                x.diff.set_item("lines", x.lines.into_object(py)).unwrap();
+                x.diff.set_item("added", x.add).unwrap();
+                x.diff.set_item("deleted", x.del).unwrap();
                 x.diff.into_object(py)
             })
             .collect();
+
         Ok(diffs.into_object(self.py))
     }
 }
@@ -69,18 +65,12 @@ impl<'a> Diff for PyDiff<'a> {
         crate::common::set_info(self.diff, old_name, new_name, op, binary, &self.py);
     }
 
-    fn add_line(&mut self, old_line: u64, new_line: u64, line: &[u8]) {
-        self.lines.push(
-            PyTuple::new(
-                self.py,
-                &[
-                    self.get_line(old_line),
-                    self.get_line(new_line),
-                    PyBytes::new(self.py, line).into_object(self.py),
-                ],
-            )
-            .into_object(self.py),
-        );
+    fn add_line(&mut self, old_line: u64, new_line: u64, _line: &[u8]) {
+        if old_line == 0 {
+            self.add.push(new_line);
+        } else if new_line == 0 {
+            self.del.push(old_line);
+        }
     }
 
     fn close(&mut self) {}
