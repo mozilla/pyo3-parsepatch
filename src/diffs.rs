@@ -17,7 +17,7 @@ impl<'a> PyDiff<'a> {
         }
     }
 
-    fn get_line(&self, line: u64) -> PyObject {
+    fn get_line(&self, line: u32) -> PyObject {
         if line == 0 {
             self.py.None()
         } else {
@@ -69,7 +69,7 @@ impl<'a> Diff for PyDiff<'a> {
         crate::common::set_info(self.diff, old_name, new_name, op, binary, &self.py);
     }
 
-    fn add_line(&mut self, old_line: u64, new_line: u64, line: &[u8]) {
+    fn add_line(&mut self, old_line: u32, new_line: u32, line: &[u8]) {
         self.lines.push(
             PyTuple::new(
                 self.py,

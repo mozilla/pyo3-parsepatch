@@ -5,8 +5,8 @@ use pyo3::{IntoPyObject, PyObject, PyResult, Python};
 pub struct PyDiff<'a> {
     py: Python<'a>,
     diff: &'a PyDict,
-    add: u64,
-    del: u64,
+    add: u32,
+    del: u32,
 }
 
 impl<'a> PyDiff<'a> {
@@ -65,7 +65,7 @@ impl<'a> Diff for PyDiff<'a> {
         crate::common::set_info(self.diff, old_name, new_name, op, binary, &self.py);
     }
 
-    fn add_line(&mut self, old_line: u64, new_line: u64, _line: &[u8]) {
+    fn add_line(&mut self, old_line: u32, new_line: u32, _line: &[u8]) {
         if old_line == 0 {
             self.add += 1;
         } else if new_line == 0 {
