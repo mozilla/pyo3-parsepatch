@@ -1,5 +1,7 @@
 use parsepatch::FileOp;
 use pyo3::types::PyDict;
+use pyo3::types::{PyBytes, PyByteArray, PyString};
+use pyo3::prelude::*;
 use pyo3::Python;
 
 #[inline(always)]
@@ -38,4 +40,17 @@ pub fn set_info(
         }
     }
     diff.set_item("binary", binary).unwrap();
+}
+
+#[inline(always)]
+pub fn get_bytes<'a>(py: Python, bytes: &'a PyObject) -> Option<&'a [u8]> {
+    if let Ok(bytes) = PyBytes::try_from(bytes.as_ref(py)) {
+        Some(bytes.as_bytes())
+    } else if let Ok(bytes) = PyString::try_from(bytes.as_ref(py)) {
+        Some(bytes.as_bytes())
+    } else if let Ok(bytes) = PyByteArray::try_from(bytes.as_ref(py)) {
+        Some(bytes.data())
+    } else {
+        None
+    }
 }

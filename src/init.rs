@@ -1,6 +1,7 @@
 use parsepatch::PatchReader;
+use pyo3::exceptions::TypeError;
 use pyo3::prelude::*;
-use pyo3::types::{PyBytes, PyModule};
+use pyo3::types::PyModule;
 use pyo3::Python;
 
 #[pyfunction]
@@ -10,8 +11,12 @@ use pyo3::Python;
 /// If the line is deleted then new_line_no is None.
 fn get_diffs(py: Python, bytes: PyObject) -> PyResult<PyObject> {
     let mut patch = crate::diffs::PyPatch::new(py);
-    let bytes = PyBytes::try_from(bytes.as_ref(py))?;
-    PatchReader::by_buf(bytes.as_bytes(), &mut patch);
+    let bytes = if let Some(bytes) = crate::common::get_bytes(py, &bytes) {
+        bytes
+    } else {
+        return Err(TypeError::py_err("Invalid patch type"))
+    };
+    PatchReader::by_buf(bytes, &mut patch);
     patch.get_result()
 }
 
@@ -19,8 +24,12 @@ fn get_diffs(py: Python, bytes: PyObject) -> PyResult<PyObject> {
 /// Get the number of added/deleted lines for each file in the patch
 fn get_counts(py: Python, bytes: PyObject) -> PyResult<PyObject> {
     let mut patch = crate::counts::PyPatch::new(py);
-    let bytes = PyBytes::try_from(bytes.as_ref(py))?;
-    PatchReader::by_buf(bytes.as_bytes(), &mut patch);
+    let bytes = if let Some(bytes) = crate::common::get_bytes(py, &bytes) {
+        bytes
+    } else {
+        return Err(TypeError::py_err("Invalid patch type"))
+    };
+    PatchReader::by_buf(bytes, &mut patch);
     patch.get_result()
 }
 
@@ -28,15 +37,19 @@ fn get_counts(py: Python, bytes: PyObject) -> PyResult<PyObject> {
 /// Get the added/deleted line numbers for each file in the patch
 fn get_lines(py: Python, bytes: PyObject) -> PyResult<PyObject> {
     let mut patch = crate::lines::PyPatch::new(py);
-    let bytes = PyBytes::try_from(bytes.as_ref(py))?;
-    PatchReader::by_buf(bytes.as_bytes(), &mut patch);
+    let bytes = if let Some(bytes) = crate::common::get_bytes(py, &bytes) {
+        bytes
+    } else {
+        return Err(TypeError::py_err("Invalid patch type"))
+    };
+    PatchReader::by_buf(bytes, &mut patch);
     patch.get_result()
 }
 
-#[pymodinit]
+#[pymodule]
 fn rs_parsepatch(_py: Python, m: &PyModule) -> PyResult<()> {
-    m.add_function(wrap_function!(get_counts))?;
-    m.add_function(wrap_function!(get_diffs))?;
-    m.add_function(wrap_function!(get_lines))?;
+    m.add_wrapped(wrap_pyfunction!(get_counts))?;
+    m.add_wrapped(wrap_pyfunction!(get_diffs))?;
+    m.add_wrapped(wrap_pyfunction!(get_lines))?;
     Ok(())
 }

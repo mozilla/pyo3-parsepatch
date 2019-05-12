@@ -9,82 +9,103 @@ import whatthepatch as wp
 
 
 def rm_bin(data):
-    return [x for x in data if not x['binary']]
+    return [x for x in data if not x["binary"]]
 
 
 def get_filename(name):
-    if name.startswith('a/') or name.startswith('b/'):
+    if name.startswith("a/") or name.startswith("b/"):
         return name[2:]
     return name
 
 
-def test_pp():
-    directory = 'tests/patches'
+def get_patch():
+    directory = "tests/patches"
     for f in os.listdir(directory):
-        with open(os.path.join(directory, f), 'rb') as In:
+        path = os.path.join(directory, f)
+        print(f"Test patch: {path}")
+        with open(path, "rb") as In:
             patch = In.read()
+            yield patch
 
-        counts = pp.get_counts(patch)
-        diffs = pp.get_diffs(patch)
-        lines = pp.get_lines(patch)
 
-        # compare counts & diffs
-        assert len(diffs) == len(counts)
-        for count, ppd in zip(counts, diffs):
-            diff = copy.deepcopy(ppd)
-            del diff['lines']
-            diff.update({'added': 0, 'deleted': 0})
-            for n, o, _ in ppd['lines']:
-                if n is None:
-                    diff['added'] += 1
-                elif o is None:
-                    diff['deleted'] += 1
-            assert diff == count
+def read(patch):
+    counts = pp.get_counts(patch)
+    diffs = pp.get_diffs(patch)
+    lines = pp.get_lines(patch)
 
-        # compare lines & diffs
-        assert len(diffs) == len(lines)
-        for line, ppd in zip(lines, diffs):
-            diff = copy.deepcopy(ppd)
-            del diff['lines']
-            diff.update({'added': [], 'deleted': []})
-            for n, o, _ in ppd['lines']:
-                if n is None:
-                    diff['added'].append(o)
-                elif o is None:
-                    diff['deleted'].append(n)
-            assert diff == line
+    # compare counts & diffs
+    assert len(diffs) == len(counts)
+    for count, ppd in zip(counts, diffs):
+        diff = copy.deepcopy(ppd)
+        del diff["lines"]
+        diff.update({"added": 0, "deleted": 0})
+        for n, o, _ in ppd["lines"]:
+            if n is None:
+                diff["added"] += 1
+            elif o is None:
+                diff["deleted"] += 1
+        assert diff == count
 
-        # we do that because wtp output doesn't contain info on bin files
-        diffs = rm_bin(diffs)
+    # compare lines & diffs
+    assert len(diffs) == len(lines)
+    for line, ppd in zip(lines, diffs):
+        diff = copy.deepcopy(ppd)
+        del diff["lines"]
+        diff.update({"added": [], "deleted": []})
+        for n, o, _ in ppd["lines"]:
+            if n is None:
+                diff["added"].append(o)
+            elif o is None:
+                diff["deleted"].append(n)
+        assert diff == line
 
-        wp_diffs = wp.parse_patch(patch.decode('utf-8'))
-        wp_diffs = list(wp_diffs)
+    # we do that because wtp output doesn't contain info on bin files
+    diffs = rm_bin(diffs)
 
-        assert len(wp_diffs) == len(diffs)
+    if not isinstance(patch, str):
+        patch = patch.decode("utf-8")
 
-        # compare wtp and pp outputs
-        for ppd, wpd in zip(diffs, wp_diffs):
-            wnew_path = get_filename(wpd.header.new_path)
-            wold_path = get_filename(wpd.header.old_path)
+    wp_diffs = wp.parse_patch(patch)
+    wp_diffs = list(wp_diffs)
 
-            assert ppd['filename'] == wnew_path
-            if wnew_path != wold_path:
-                assert ppd['renamed_from'] == wold_path
-            else:
-                assert ppd['renamed_from'] is None
+    assert len(wp_diffs) == len(diffs)
 
-            if not wpd.changes:
-                assert not ppd['lines']
-                continue
+    # compare wtp and pp outputs
+    for ppd, wpd in zip(diffs, wp_diffs):
+        wnew_path = get_filename(wpd.header.new_path)
+        wold_path = get_filename(wpd.header.old_path)
 
-            changes = list(wpd.changes)
-            assert len(ppd['lines']) == len(changes)
-            for pline, wline in zip(ppd['lines'], changes):
-                wn, wo, wc = wline
-                pn, po, pc = pline
+        assert ppd["filename"] == wnew_path
+        if wnew_path != wold_path:
+            assert ppd["renamed_from"] == wold_path
+        else:
+            assert ppd["renamed_from"] is None
 
-                assert wn == pn
-                assert wo == po
+        if not wpd.changes:
+            assert not ppd["lines"]
+            continue
 
-                pc = pc.decode('utf-8')
-                assert wc == pc
+        changes = list(wpd.changes)
+        assert len(ppd["lines"]) == len(changes)
+        for pline, wline in zip(ppd["lines"], changes):
+            wn, wo, wc = wline
+            pn, po, pc = pline
+
+            assert wn == pn
+            assert wo == po
+
+            pc = pc.decode("utf-8")
+            assert wc == pc
+
+
+def test_pp():
+    for patch in get_patch():
+        read(patch)
+
+    for patch in get_patch():
+        patch = patch.decode("utf-8")
+        read(patch)
+
+    for patch in get_patch():
+        patch = bytearray(patch)
+        read(patch)
