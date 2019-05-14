@@ -77,7 +77,7 @@ def read(patch):
 
         assert ppd["filename"] == wnew_path
         if wnew_path != wold_path:
-            assert ppd["renamed_from"] == wold_path
+            assert ppd["renamed_from"] == wold_path or ppd["copied_from"] == wold_path
         else:
             assert ppd["renamed_from"] is None
 

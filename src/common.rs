@@ -17,24 +17,35 @@ pub fn set_info(
         FileOp::New => {
             diff.set_item("new", true).unwrap();
             diff.set_item("deleted", false).unwrap();
+            diff.set_item("copied_from", py.None()).unwrap();
             diff.set_item("renamed_from", py.None()).unwrap();
             diff.set_item("filename", new_name).unwrap();
         }
         FileOp::Deleted => {
             diff.set_item("new", false).unwrap();
             diff.set_item("deleted", true).unwrap();
+            diff.set_item("copied_from", py.None()).unwrap();
             diff.set_item("renamed_from", py.None()).unwrap();
             diff.set_item("filename", old_name).unwrap();
         }
         FileOp::Renamed => {
             diff.set_item("new", false).unwrap();
             diff.set_item("deleted", false).unwrap();
+            diff.set_item("copied_from", py.None()).unwrap();
             diff.set_item("renamed_from", old_name).unwrap();
+            diff.set_item("filename", new_name).unwrap();
+        },
+        FileOp::Copied => {
+            diff.set_item("new", false).unwrap();
+            diff.set_item("deleted", false).unwrap();
+            diff.set_item("copied_from", old_name).unwrap();
+            diff.set_item("renamed_from", py.None()).unwrap();
             diff.set_item("filename", new_name).unwrap();
         }
         FileOp::None => {
             diff.set_item("new", false).unwrap();
             diff.set_item("deleted", false).unwrap();
+            diff.set_item("copied_from", py.None()).unwrap();
             diff.set_item("renamed_from", py.None()).unwrap();
             diff.set_item("filename", new_name).unwrap();
         }
