@@ -1,6 +1,6 @@
 [package]
 name = "rs_parsepatch"
-version = "0.1.7"
+version = "0.1.8"
 authors = ["calixteman <cdenizet@mozilla.com>"]
 edition = "2018"
 
@@ -9,7 +9,7 @@ name = "rs_parsepatch"
 crate-type = ["cdylib"]
 
 [dependencies]
-parsepatch = "0.1.6"
+parsepatch = "0.1.7"
 
 [dependencies.pyo3]
 version = "0.7.0-alpha.1"
