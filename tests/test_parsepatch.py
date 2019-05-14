@@ -38,12 +38,12 @@ def read(patch):
     for count, ppd in zip(counts, diffs):
         diff = copy.deepcopy(ppd)
         del diff["lines"]
-        diff.update({"added": 0, "deleted": 0})
+        diff.update({"added_lines": 0, "deleted_lines": 0})
         for n, o, _ in ppd["lines"]:
             if n is None:
-                diff["added"] += 1
+                diff["added_lines"] += 1
             elif o is None:
-                diff["deleted"] += 1
+                diff["deleted_lines"] += 1
         assert diff == count
 
     # compare lines & diffs
@@ -51,12 +51,12 @@ def read(patch):
     for line, ppd in zip(lines, diffs):
         diff = copy.deepcopy(ppd)
         del diff["lines"]
-        diff.update({"added": [], "deleted": []})
+        diff.update({"added_lines": [], "deleted_lines": []})
         for n, o, _ in ppd["lines"]:
             if n is None:
-                diff["added"].append(o)
+                diff["added_lines"].append(o)
             elif o is None:
-                diff["deleted"].append(n)
+                diff["deleted_lines"].append(n)
         assert diff == line
 
     # we do that because wtp output doesn't contain info on bin files

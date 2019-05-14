@@ -50,8 +50,8 @@ impl<'a> PyPatch<'a> {
             .diffs
             .drain(..)
             .map(move |x| {
-                x.diff.set_item("added", x.add).unwrap();
-                x.diff.set_item("deleted", x.del).unwrap();
+                x.diff.set_item("added_lines", x.add).unwrap();
+                x.diff.set_item("deleted_lines", x.del).unwrap();
                 x.diff.into_object(py)
             })
             .collect();
