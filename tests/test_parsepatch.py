@@ -22,7 +22,7 @@ def get_patch():
     directory = "tests/patches"
     for f in os.listdir(directory):
         path = os.path.join(directory, f)
-        print(f"Test patch: {path}")
+        print("Test patch: {}".format(path))
         with open(path, "rb") as In:
             patch = In.read()
             yield patch
