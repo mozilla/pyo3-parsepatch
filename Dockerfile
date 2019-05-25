@@ -1,3 +1,5 @@
+# Almost a copy/paste from: https://github.com/PyO3/pyo3-pack/blob/master/Dockerfile
+
 FROM quay.io/pypa/manylinux2010_x86_64
 
 ENV PATH /root/.cargo/bin:$PATH
@@ -18,7 +20,6 @@ RUN curl https://www.musl-libc.org/releases/musl-1.1.20.tar.gz -o musl.tar.gz \
     && rustup toolchain install nightly \
     && rustup default nightly \
     && rustup target add x86_64-unknown-linux-musl \
-    && mkdir /io \
     && python3 -m pip install cffi virtualenv \
     && cargo install pyo3-pack
 
