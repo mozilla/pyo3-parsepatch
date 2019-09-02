@@ -1,5 +1,10 @@
 # pyo3-parsepatch
 
+A Python wrapper for https://github.com/mozilla/rust-parsepatch.  
+The goal of this library is to be able to parse the patches coming from mercurial.  
+All the patches in https://hg.mozilla.org/mozilla-central/ have been successfully parsed !  
+It's used in https://github.com/mozilla/bugbug to get some metrics on patches.
+
 ## License
 
 Published under the MPL 2.0 license.
@@ -17,10 +22,6 @@ And then:
 docker run -it rs_pp
 ```
 to publish the packages on Pypi.
-
-## Bugs
-
-https://github.com/mozilla/crash-stop-addon/issues/new
 
 ## Contact
 
