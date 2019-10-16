@@ -37,6 +37,6 @@ ADD Cargo.* ./
 RUN . venv/bin/activate && maturin develop && python -m pytest .
 
 ENV RUSTFLAGS="-C target-feature=-crt-static"
-RUN maturin build --target x86_64-unknown-linux-musl --manylinux 2010
+RUN maturin build --target x86_64-unknown-linux-musl --manylinux off
 
 CMD ["maturin", "publish"]
