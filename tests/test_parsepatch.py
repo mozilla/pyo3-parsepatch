@@ -8,10 +8,6 @@ import rs_parsepatch as pp
 import whatthepatch as wp
 
 
-def rm_bin(data):
-    return [x for x in data if not x["binary"]]
-
-
 def get_filename(name):
     if name.startswith("a/") or name.startswith("b/"):
         return name[2:]
@@ -59,9 +55,6 @@ def read(patch):
                 diff["deleted_lines"].append(n)
         assert diff == line
 
-    # we do that because wtp output doesn't contain info on bin files
-    diffs = rm_bin(diffs)
-
     if not isinstance(patch, str):
         patch = patch.decode("utf-8")
 
@@ -88,7 +81,7 @@ def read(patch):
         changes = list(wpd.changes)
         assert len(ppd["lines"]) == len(changes)
         for pline, wline in zip(ppd["lines"], changes):
-            wn, wo, wc = wline
+            wn, wo, wc, whc = wline
             pn, po, pc = pline
 
             assert wn == pn
