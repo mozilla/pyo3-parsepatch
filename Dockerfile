@@ -4,7 +4,7 @@ FROM quay.io/pypa/manylinux2010_x86_64
 
 ENV PATH /root/.cargo/bin:$PATH
 # Add all supported python versions
-ENV PATH /opt/python/cp35-cp35m/bin/:/opt/python/cp36-cp36m/bin/:/opt/python/cp37-cp37m/bin/:$PATH
+ENV PATH /opt/python/cp35-cp35m/bin/:/opt/python/cp36-cp36m/bin/:/opt/python/cp37-cp37m/bin/:/opt/python/cp38-cp38/bin/:$PATH
 # Otherwise `cargo new` errors
 ENV USER root
 
@@ -16,12 +16,12 @@ RUN curl https://www.musl-libc.org/releases/musl-1.1.20.tar.gz -o musl.tar.gz \
     && make install -j$(expr $(nproc) \+ 1) \
     && cd .. \
     && rm -rf x86_64-unknown-linux-musl \
-    && curl https://sh.rustup.rs -sSf | sh -s -- -y \
-    && rustup toolchain install nightly \
+    && curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain none -y \
+    && rustup set profile minimal \
+    && rustup toolchain install nightly --target x86_64-unknown-linux-musl \
     && rustup default nightly \
-    && rustup target add x86_64-unknown-linux-musl \
     && python3 -m pip install cffi virtualenv \
-    && cargo install pyo3-pack
+    && cargo install maturin
 
 WORKDIR /rs_pp
 
@@ -34,8 +34,9 @@ ADD src src
 ADD tests tests
 ADD Cargo.* ./
 
-RUN . venv/bin/activate && pyo3-pack develop && python -m pytest .
+RUN . venv/bin/activate && maturin develop && python -m pytest .
 
-RUN pyo3-pack build
+ENV RUSTFLAGS="-C target-feature=-crt-static"
+RUN maturin build --target x86_64-unknown-linux-musl --manylinux 2010
 
-CMD ["pyo3-pack", "publish"]
+CMD ["maturin", "publish"]
