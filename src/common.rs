@@ -60,7 +60,13 @@ pub fn get_bytes<'a>(py: Python, bytes: &'a PyObject) -> Option<&'a [u8]> {
     } else if let Ok(bytes) = PyString::try_from(bytes.as_ref(py)) {
         Some(bytes.as_bytes())
     } else if let Ok(bytes) = PyByteArray::try_from(bytes.as_ref(py)) {
-        Some(bytes.data())
+        let v = bytes.to_vec();
+        let p = v.as_ptr();
+        let len = v.len();
+        let s = unsafe {
+          std::slice::from_raw_parts(p, len)
+        };
+        Some(s)
     } else {
         None
     }

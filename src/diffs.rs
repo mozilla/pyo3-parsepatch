@@ -1,6 +1,6 @@
 use parsepatch::{Diff, FileOp, Patch};
 use pyo3::types::{PyBytes, PyDict, PyTuple};
-use pyo3::{IntoPyObject, PyObject, PyResult, Python};
+use pyo3::{ToPyObject, PyObject, PyResult, Python};
 
 pub struct PyDiff<'a> {
     py: Python<'a>,
@@ -21,7 +21,7 @@ impl<'a> PyDiff<'a> {
         if line == 0 {
             self.py.None()
         } else {
-            line.into_object(self.py)
+            line.to_object(self.py)
         }
     }
 }
@@ -56,11 +56,11 @@ impl<'a> PyPatch<'a> {
             .diffs
             .drain(..)
             .map(move |x| {
-                x.diff.set_item("lines", x.lines.into_object(py)).unwrap();
-                x.diff.into_object(py)
+                x.diff.set_item("lines", x.lines.to_object(py)).unwrap();
+                x.diff.to_object(py)
             })
             .collect();
-        Ok(diffs.into_object(self.py))
+        Ok(diffs.to_object(self.py))
     }
 }
 
@@ -76,10 +76,10 @@ impl<'a> Diff for PyDiff<'a> {
                 &[
                     self.get_line(old_line),
                     self.get_line(new_line),
-                    PyBytes::new(self.py, line).into_object(self.py),
+                    PyBytes::new(self.py, line).to_object(self.py),
                 ],
             )
-            .into_object(self.py),
+            .to_object(self.py),
         );
     }
 
