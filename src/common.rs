@@ -4,6 +4,11 @@ use pyo3::types::{PyBytes, PyByteArray, PyString};
 use pyo3::prelude::*;
 use pyo3::Python;
 
+pub(crate) enum Bytes<'a> {
+    Slice(&'a [u8]),
+    Vec(Vec<u8>),
+}
+
 #[inline(always)]
 pub fn set_info(
     diff: &PyDict,
@@ -54,13 +59,13 @@ pub fn set_info(
 }
 
 #[inline(always)]
-pub fn get_bytes<'a>(py: Python, bytes: &'a PyObject) -> Option<&'a [u8]> {
+pub(crate) fn get_bytes<'a>(py: Python, bytes: &'a PyObject) -> Option<Bytes<'a>> {
     if let Ok(bytes) = PyBytes::try_from(bytes.as_ref(py)) {
-        Some(bytes.as_bytes())
+        Some(Bytes::Slice(bytes.as_bytes()))
     } else if let Ok(bytes) = PyString::try_from(bytes.as_ref(py)) {
-        Some(bytes.as_bytes())
+        Some(Bytes::Slice(bytes.as_bytes()))
     } else if let Ok(bytes) = PyByteArray::try_from(bytes.as_ref(py)) {
-        Some(bytes.data())
+        Some(Bytes::Vec(bytes.to_vec()))
     } else {
         None
     }
