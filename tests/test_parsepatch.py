@@ -81,7 +81,7 @@ def read(patch):
         changes = list(wpd.changes)
         assert len(ppd["lines"]) == len(changes)
         for pline, wline in zip(ppd["lines"], changes):
-            wn, wo, wc = wline
+            wn, wo, wc, whc = wline
             pn, po, pc = pline
 
             assert wn == pn
