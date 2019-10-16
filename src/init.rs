@@ -35,13 +35,13 @@ fn get_diffs(py: Python, bytes: PyObject) -> PyResult<PyObject> {
 #[pyfunction]
 /// Get the number of added/deleted lines for each file in the patch
 fn get_counts(py: Python, bytes: PyObject) -> PyResult<PyObject> {
-    parse_patch!(py, bytes, diffs)
+    parse_patch!(py, bytes, counts)
 }
 
 #[pyfunction]
 /// Get the added/deleted line numbers for each file in the patch
 fn get_lines(py: Python, bytes: PyObject) -> PyResult<PyObject> {
-    parse_patch!(py, bytes, diffs)
+    parse_patch!(py, bytes, lines)
 }
 
 #[pymodule]
