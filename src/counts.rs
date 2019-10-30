@@ -1,6 +1,6 @@
-use parsepatch::{Diff, FileOp, Patch};
+use parsepatch::{BinaryHunk, Diff, FileMode, FileOp, Patch};
 use pyo3::types::PyDict;
-use pyo3::{ToPyObject, PyObject, PyResult, Python};
+use pyo3::{PyObject, PyResult, Python, ToPyObject};
 
 pub struct PyDiff<'a> {
     py: Python<'a>,
@@ -61,8 +61,23 @@ impl<'a> PyPatch<'a> {
 }
 
 impl<'a> Diff for PyDiff<'a> {
-    fn set_info(&mut self, old_name: &str, new_name: &str, op: FileOp, binary: bool) {
-        crate::common::set_info(self.diff, old_name, new_name, op, binary, &self.py);
+    fn set_info(
+        &mut self,
+        old_name: &str,
+        new_name: &str,
+        op: FileOp,
+        binary_sizes: Option<Vec<BinaryHunk>>,
+        file_mode: Option<FileMode>,
+    ) {
+        crate::common::set_info(
+            self.diff,
+            old_name,
+            new_name,
+            op,
+            binary_sizes,
+            file_mode,
+            &self.py,
+        );
     }
 
     fn add_line(&mut self, old_line: u32, new_line: u32, _line: &[u8]) {
@@ -74,4 +89,6 @@ impl<'a> Diff for PyDiff<'a> {
     }
 
     fn close(&mut self) {}
+
+    fn new_hunk(&mut self) {}
 }

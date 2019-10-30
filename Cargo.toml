@@ -9,7 +9,7 @@ name = "rs_parsepatch"
 crate-type = ["cdylib"]
 
 [dependencies]
-parsepatch = "0.2.1"
+parsepatch = "0.2.3"
 
 [dependencies.pyo3]
 version = "0.8.2"
