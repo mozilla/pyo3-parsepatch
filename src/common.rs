@@ -63,7 +63,7 @@ pub(crate) fn get_bytes<'a>(py: Python, bytes: &'a PyObject) -> Option<Bytes<'a>
     if let Ok(bytes) = PyBytes::try_from(bytes.as_ref(py)) {
         Some(Bytes::Slice(bytes.as_bytes()))
     } else if let Ok(bytes) = PyString::try_from(bytes.as_ref(py)) {
-        Some(Bytes::Slice(bytes.as_bytes()))
+        Some(Bytes::Slice(bytes.as_bytes().unwrap()))
     } else if let Ok(bytes) = PyByteArray::try_from(bytes.as_ref(py)) {
         Some(Bytes::Vec(bytes.to_vec()))
     } else {

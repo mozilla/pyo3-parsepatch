@@ -116,7 +116,7 @@ dependencies = [
 
 [[package]]
 name = "parsepatch"
-version = "0.2.0"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -227,9 +227,9 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "rs_parsepatch"
-version = "0.2.4"
+version = "0.2.5"
 dependencies = [
- "parsepatch 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "parsepatch 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "pyo3 0.8.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -320,7 +320,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)" = "14b6052be84e6b71ab17edffc2eeabf5c2c3ae1fdb464aae35ac50c67a44e1f7"
 "checksum memchr 2.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "88579771288728879b57485cc7d6b07d648c9f0141eb955f8ab7f9d45394468e"
 "checksum num-traits 0.2.8 (registry+https://github.com/rust-lang/crates.io-index)" = "6ba9a427cfca2be13aa6f6403b0b7e7368fe982bfa16fccc450ce74c46cd9b32"
-"checksum parsepatch 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "629c14634cda879e3a1bcf31772f171a3754bd6215c5d9dcf8f68f23ebc4197f"
+"checksum parsepatch 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "e0274b072b0db750695d1bc560582727eeec4967590602c239069ec47bfc523d"
 "checksum paste 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)" = "423a519e1c6e828f1e73b720f9d9ed2fa643dce8a7737fb43235ce0b41eeaa49"
 "checksum paste-impl 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)" = "4214c9e912ef61bf42b81ba9a47e8aad1b2ffaf739ab162bf96d1e011f54e6c5"
 "checksum proc-macro-hack 0.5.10 (registry+https://github.com/rust-lang/crates.io-index)" = "114cdf1f426eb7f550f01af5f53a33c0946156f6814aec939b3bd77e844f9a9d"
