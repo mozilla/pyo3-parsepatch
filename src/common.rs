@@ -10,15 +10,25 @@ pub(crate) enum Bytes<'a> {
 }
 
 #[inline(always)]
-pub fn create_mode(modes: Option<FileMode>, py: &Python) -> PyObject {
+pub fn create_mode(old: Option<u32>, new: Option<u32>, py: &Python) -> PyObject {
+    let dict = PyDict::new(*py);
+    if let Some(old) = old {
+        dict.set_item("old", old).unwrap();
+    }
+    if let Some(new) = new {
+        dict.set_item("new", new).unwrap();
+    }
+    dict.to_object(*py)
+}
+
+#[inline(always)]
+pub fn create_file_mode(modes: Option<FileMode>, py: &Python) -> PyObject {
+    let dict = PyDict::new(*py);
     if let Some(modes) = modes {
-        let dict = PyDict::new(*py);
         dict.set_item("old", modes.old).unwrap();
         dict.set_item("new", modes.new).unwrap();
-        dict.to_object(*py)
-    } else {
-        PyDict::new(*py).to_object(*py)
     }
+    dict.to_object(*py)
 }
 
 #[inline(always)]
@@ -47,7 +57,7 @@ pub fn set_info(
             diff.set_item("copied_from", py.None()).unwrap();
             diff.set_item("renamed_from", py.None()).unwrap();
             diff.set_item("filename", new_name).unwrap();
-            diff.set_item("modes", create_mode(Some(FileMode { old: 0, new: m }), py))
+            diff.set_item("modes", create_mode(None, Some(m), py))
                 .unwrap();
         }
         FileOp::Deleted(m) => {
@@ -56,7 +66,7 @@ pub fn set_info(
             diff.set_item("copied_from", py.None()).unwrap();
             diff.set_item("renamed_from", py.None()).unwrap();
             diff.set_item("filename", old_name).unwrap();
-            diff.set_item("modes", create_mode(Some(FileMode { old: m, new: 0 }), py))
+            diff.set_item("modes", create_mode(Some(m), None, py))
                 .unwrap();
         }
         FileOp::Renamed => {
@@ -65,7 +75,8 @@ pub fn set_info(
             diff.set_item("copied_from", py.None()).unwrap();
             diff.set_item("renamed_from", old_name).unwrap();
             diff.set_item("filename", new_name).unwrap();
-            diff.set_item("modes", create_mode(file_mode, py)).unwrap();
+            diff.set_item("modes", create_file_mode(file_mode, py))
+                .unwrap();
         }
         FileOp::Copied => {
             diff.set_item("new", false).unwrap();
@@ -73,7 +84,8 @@ pub fn set_info(
             diff.set_item("copied_from", old_name).unwrap();
             diff.set_item("renamed_from", py.None()).unwrap();
             diff.set_item("filename", new_name).unwrap();
-            diff.set_item("modes", create_mode(file_mode, py)).unwrap();
+            diff.set_item("modes", create_file_mode(file_mode, py))
+                .unwrap();
         }
         FileOp::None => {
             diff.set_item("new", false).unwrap();
@@ -81,7 +93,8 @@ pub fn set_info(
             diff.set_item("copied_from", py.None()).unwrap();
             diff.set_item("renamed_from", py.None()).unwrap();
             diff.set_item("filename", new_name).unwrap();
-            diff.set_item("modes", create_mode(file_mode, py)).unwrap();
+            diff.set_item("modes", create_file_mode(file_mode, py))
+                .unwrap();
         }
     }
 
