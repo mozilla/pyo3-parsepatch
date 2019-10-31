@@ -1,8 +1,10 @@
 [package]
 name = "rs_parsepatch"
-version = "0.2.6"
+version = "0.2.7"
 authors = ["calixteman <cdenizet@mozilla.com>"]
 edition = "2018"
+repository = "https://github.com/mozilla/pyo3-parsepatch"
+homepage = "https://github.com/mozilla/pyo3-parsepatch"
 
 [lib]
 name = "rs_parsepatch"
@@ -14,3 +16,17 @@ parsepatch = "0.2.3"
 [dependencies.pyo3]
 version = "0.8.2"
 features = ["extension-module"]
+
+[package.metadata.maturin]
+classifier = [
+    "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.5",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python",
+    "Programming Language :: Rust",
+]
+project-url = ["Github", "https://github.com/mozilla/pyo3-parsepatch"]
+maintainer-email = "cdenizet@mozilla.com"
