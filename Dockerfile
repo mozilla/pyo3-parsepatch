@@ -33,6 +33,7 @@ RUN . venv/bin/activate && python -m pip install -r requirements-dev.txt
 ADD src src
 ADD tests tests
 ADD Cargo.* ./
+ADD pyproject.toml ./
 
 RUN . venv/bin/activate && maturin develop && python -m pytest .
 
