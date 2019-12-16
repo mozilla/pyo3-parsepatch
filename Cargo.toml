@@ -14,7 +14,7 @@ crate-type = ["cdylib"]
 parsepatch = "0.2.3"
 
 [dependencies.pyo3]
-version = "0.8.2"
+version = "0.8.4"
 features = ["extension-module"]
 
 [package.metadata.maturin]
