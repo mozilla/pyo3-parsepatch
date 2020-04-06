@@ -11,10 +11,10 @@ name = "rs_parsepatch"
 crate-type = ["cdylib"]
 
 [dependencies]
-parsepatch = "0.2.3"
+parsepatch = "0.2"
 
 [dependencies.pyo3]
-version = "0.8.2"
+version = "0.9"
 features = ["extension-module"]
 
 [package.metadata.maturin]
