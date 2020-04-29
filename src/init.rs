@@ -1,8 +1,16 @@
-use parsepatch::PatchReader;
-use pyo3::exceptions::TypeError;
+use parsepatch::{ParsepatchError, PatchReader};
+use pyo3::exceptions::{RuntimeError, TypeError};
 use pyo3::prelude::*;
 use pyo3::types::{PyBool, PyDict, PyModule};
-use pyo3::Python;
+use pyo3::{PyErr, Python};
+
+struct PPError(ParsepatchError);
+
+impl std::convert::From<PPError> for PyErr {
+    fn from(e: PPError) -> Self {
+        RuntimeError::py_err(e.0.to_string())
+    }
+}
 
 macro_rules! parse_patch {
     ($py:path, $bytes:path, $v:ident) => {{
@@ -10,8 +18,12 @@ macro_rules! parse_patch {
 
         if let Some(bytes) = crate::common::get_bytes($py, &$bytes) {
             match bytes {
-                crate::common::Bytes::Slice(bytes) => PatchReader::by_buf(bytes, &mut patch),
-                crate::common::Bytes::Vec(bytes) => PatchReader::by_buf(&bytes, &mut patch),
+                crate::common::Bytes::Slice(bytes) => {
+                    PatchReader::by_buf(bytes, &mut patch).map_err(|e| PPError(e))?
+                }
+                crate::common::Bytes::Vec(bytes) => {
+                    PatchReader::by_buf(&bytes, &mut patch).map_err(|e| PPError(e))?
+                }
             }
         } else {
             return Err(TypeError::py_err("Invalid patch type"));
@@ -40,8 +52,12 @@ fn get_diffs(py: Python, bytes: PyObject, kwargs: Option<&PyDict>) -> PyResult<P
 
     if let Some(bytes) = crate::common::get_bytes(py, &bytes) {
         match bytes {
-            crate::common::Bytes::Slice(bytes) => PatchReader::by_buf(bytes, &mut patch),
-            crate::common::Bytes::Vec(bytes) => PatchReader::by_buf(&bytes, &mut patch),
+            crate::common::Bytes::Slice(bytes) => {
+                PatchReader::by_buf(bytes, &mut patch).map_err(|e| PPError(e))?
+            }
+            crate::common::Bytes::Vec(bytes) => {
+                PatchReader::by_buf(&bytes, &mut patch).map_err(|e| PPError(e))?
+            }
         }
     } else {
         return Err(TypeError::py_err("Invalid patch type"));

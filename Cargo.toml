@@ -1,6 +1,6 @@
 [package]
 name = "rs_parsepatch"
-version = "0.3.0"
+version = "0.3.1"
 authors = ["calixteman <cdenizet@mozilla.com>"]
 edition = "2018"
 repository = "https://github.com/mozilla/pyo3-parsepatch"
