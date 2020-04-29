@@ -247,7 +247,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "rs_parsepatch"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "parsepatch 0.2.7 (registry+https://github.com/rust-lang/crates.io-index)",
  "pyo3 0.9.2 (registry+https://github.com/rust-lang/crates.io-index)",
