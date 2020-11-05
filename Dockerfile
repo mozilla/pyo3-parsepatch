@@ -27,15 +27,15 @@ WORKDIR /rs_pp
 
 ADD requirements-dev.txt .
 
-RUN virtualenv -p python3 venv
-RUN . venv/bin/activate && python -m pip install -r requirements-dev.txt
+RUN virtualenv -p python3 /venv
+RUN . /venv/bin/activate && python -m pip install -r requirements-dev.txt
 
 ADD src src
 ADD tests tests
 ADD Cargo.* ./
 ADD pyproject.toml ./
 
-RUN . venv/bin/activate && maturin develop && python -m pytest .
+RUN . /venv/bin/activate && maturin develop && python -m pytest .
 
 ENV RUSTFLAGS="-C target-feature=-crt-static"
 RUN maturin build --target x86_64-unknown-linux-musl --manylinux off
