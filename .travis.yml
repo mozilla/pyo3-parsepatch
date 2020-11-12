@@ -1,0 +1,7 @@
+language: rust
+
+services:
+  - docker
+
+script:
+- docker build
