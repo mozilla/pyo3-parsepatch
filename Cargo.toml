@@ -14,6 +14,7 @@ crate-type = ["cdylib"]
 parsepatch = "0.2"
 
 [dependencies.pyo3]
+# Pin to 470716e, as it contains a fix for https://github.com/PyO3/pyo3/issues/1264.
 git = "https://github.com/Pyo3/pyo3.git"
 rev = "470716e"
 features = ["extension-module"]
