@@ -1,5 +1,3 @@
-#![feature(specialization)]
-
 extern crate parsepatch;
 
 #[macro_use]

@@ -1,5 +1,5 @@
 use parsepatch::{ParsepatchError, PatchReader};
-use pyo3::exceptions::{RuntimeError, TypeError};
+use pyo3::exceptions::{PyRuntimeError, PyTypeError};
 use pyo3::prelude::*;
 use pyo3::types::{PyBool, PyDict, PyModule};
 use pyo3::{PyErr, Python};
@@ -8,7 +8,7 @@ struct PPError(ParsepatchError);
 
 impl std::convert::From<PPError> for PyErr {
     fn from(e: PPError) -> Self {
-        RuntimeError::py_err(e.0.to_string())
+        PyRuntimeError::new_err(e.0.to_string())
     }
 }
 
@@ -26,7 +26,7 @@ macro_rules! parse_patch {
                 }
             }
         } else {
-            return Err(TypeError::py_err("Invalid patch type"));
+            return Err(PyTypeError::new_err("Invalid patch type"));
         };
 
         patch.get_result()
@@ -60,7 +60,7 @@ fn get_diffs(py: Python, bytes: PyObject, kwargs: Option<&PyDict>) -> PyResult<P
             }
         }
     } else {
-        return Err(TypeError::py_err("Invalid patch type"));
+        return Err(PyTypeError::new_err("Invalid patch type"));
     };
 
     patch.get_result()
