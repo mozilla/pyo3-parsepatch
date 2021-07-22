@@ -29,5 +29,5 @@ classifier = [
     "Programming Language :: Python",
     "Programming Language :: Rust",
 ]
-project-url = ["Github", "https://github.com/mozilla/pyo3-parsepatch"]
+project-url = { homepage: "https://github.com/mozilla/pyo3-parsepatch" }
 maintainer-email = "cdenizet@mozilla.com"
