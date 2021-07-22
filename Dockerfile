@@ -34,6 +34,7 @@ ADD src src
 ADD tests tests
 ADD Cargo.* ./
 ADD pyproject.toml ./
+ADD README.md README.md
 
 RUN . /venv/bin/activate && maturin develop && python -m pytest .
 
