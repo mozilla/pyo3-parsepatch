@@ -40,6 +40,6 @@ RUN virtualenv -p python3.9 /venv39 && . /venv39/bin/activate && python -m pip i
 RUN virtualenv -p python3.10 /venv310 && . /venv310/bin/activate && python -m pip install -r requirements-dev.txt && maturin develop && python -m pytest . && rm -r /venv310
 
 ENV RUSTFLAGS="-C target-feature=-crt-static"
-RUN maturin build --target x86_64-unknown-linux-musl --manylinux off
+RUN maturin build --target x86_64-unknown-linux-musl --manylinux off --interpreter /opt/python/cp37-cp37m/bin/python /opt/python/cp38-cp38/bin/python /opt/python/cp39-cp39/bin/python /opt/python/cp310-cp310/bin/python
 
-CMD ["maturin", "publish"]
+CMD ["maturin", "publish", "--interpreter", "/opt/python/cp37-cp37m/bin/python", "/opt/python/cp38-cp38/bin/python", "/opt/python/cp39-cp39/bin/python", "/opt/python/cp310-cp310/bin/python"]
