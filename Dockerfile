@@ -20,6 +20,7 @@ RUN curl https://www.musl-libc.org/releases/musl-1.1.20.tar.gz -o musl.tar.gz \
     && rustup set profile minimal \
     && rustup toolchain install nightly --target x86_64-unknown-linux-musl \
     && rustup default nightly \
+    && yum install -y libffi-devel \
     && python3 -m pip install cffi virtualenv \
     && cargo install maturin
 
