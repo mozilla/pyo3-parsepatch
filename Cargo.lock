@@ -177,7 +177,7 @@ dependencies = [
 
 [[package]]
 name = "rs_parsepatch"
-version = "0.3.6"
+version = "0.3.7"
 dependencies = [
  "parsepatch",
  "pyo3",
