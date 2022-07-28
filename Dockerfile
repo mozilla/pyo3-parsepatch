@@ -21,15 +21,12 @@ RUN curl https://www.musl-libc.org/releases/musl-1.1.20.tar.gz -o musl.tar.gz \
     && rustup toolchain install nightly --target x86_64-unknown-linux-musl \
     && rustup default nightly \
     && yum install -y libffi-devel \
-    && python3 -m pip install cffi virtualenv \
+    && python3 -m pip install --no-cache-dir virtualenv \
     && cargo install maturin
 
 WORKDIR /rs_pp
 
 ADD requirements-dev.txt .
-
-RUN virtualenv -p python3 /venv
-RUN . /venv/bin/activate && python -m pip install -r requirements-dev.txt
 
 ADD src src
 ADD tests tests
@@ -37,7 +34,10 @@ ADD Cargo.* ./
 ADD pyproject.toml ./
 ADD README.md README.md
 
-RUN . /venv/bin/activate && maturin develop && python -m pytest .
+RUN virtualenv -p python3.7 /venv37 && . /venv37/bin/activate && python -m pip install --no-cache-dir -r requirements-dev.txt && maturin develop && python -m pytest . && rm -r /venv37
+RUN virtualenv -p python3.8 /venv38 && . /venv38/bin/activate && python -m pip install --no-cache-dir -r requirements-dev.txt && maturin develop && python -m pytest . && rm -r /venv38
+RUN virtualenv -p python3.9 /venv39 && . /venv39/bin/activate && python -m pip install --no-cache-dir -r requirements-dev.txt && maturin develop && python -m pytest . && rm -r /venv39
+RUN virtualenv -p python3.10 /venv310 && . /venv310/bin/activate && python -m pip install -r requirements-dev.txt && maturin develop && python -m pytest . && rm -r /venv310
 
 ENV RUSTFLAGS="-C target-feature=-crt-static"
 RUN maturin build --target x86_64-unknown-linux-musl --manylinux off
