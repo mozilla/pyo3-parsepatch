@@ -91,9 +91,9 @@ dependencies = [
 
 [[package]]
 name = "parsepatch"
-version = "0.2.9"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b82b65ac8bbacb8e8dec02d4d95e4246af4a6545cce91ca910da8eea9269afde"
+checksum = "5e4853d6c2baee52240ca7e6fe96938ed07981d304ab1a73b5b3e7d9dcd3cc48"
 dependencies = [
  "log",
 ]
