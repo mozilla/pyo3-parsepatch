@@ -33,7 +33,8 @@ macro_rules! parse_patch {
     }};
 }
 
-#[pyfunction(kwargs = "**")]
+#[pyfunction]
+#[pyo3(signature = (bytes, **kwargs))]
 /// Get the added/deleted/moved lines for each file in the patch.
 /// Each line is a tuple (old_line_no, new_line_no, line_bytes).
 /// If the line is added then old_line_no is None.

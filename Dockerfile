@@ -4,7 +4,7 @@ FROM quay.io/pypa/manylinux2014_x86_64
 
 ENV PATH /root/.cargo/bin:$PATH
 # Add all supported python versions
-ENV PATH /opt/python/cp37-cp37m/bin/:/opt/python/cp38-cp38/bin/:/opt/python/cp39-cp39/bin/:/opt/python/cp310-cp310/bin:/opt/python/cp311-cp311/bin:$PATH
+ENV PATH /opt/python/cp37-cp37m/bin/:/opt/python/cp38-cp38/bin/:/opt/python/cp39-cp39/bin/:/opt/python/cp310-cp310/bin:/opt/python/cp311-cp311:/bin/opt/python/cp312-cp312/bin:$PATH
 # Otherwise `cargo new` errors
 ENV USER root
 
@@ -22,7 +22,7 @@ RUN curl https://www.musl-libc.org/releases/musl-1.1.20.tar.gz -o musl.tar.gz \
     && rustup default nightly \
     && yum install -y libffi-devel \
     && python3 -m pip install --no-cache-dir virtualenv \
-    && cargo install maturin
+    && cargo install --locked maturin
 
 WORKDIR /rs_pp
 
@@ -39,8 +39,9 @@ RUN virtualenv -p python3.8 /venv38 && . /venv38/bin/activate && python -m pip i
 RUN virtualenv -p python3.9 /venv39 && . /venv39/bin/activate && python -m pip install --no-cache-dir -r requirements-dev.txt && maturin develop && python -m pytest . && rm -r /venv39
 RUN virtualenv -p python3.10 /venv310 && . /venv310/bin/activate && python -m pip install -r requirements-dev.txt && maturin develop && python -m pytest . && rm -r /venv310
 RUN virtualenv -p python3.11 /venv311 && . /venv311/bin/activate && python -m pip install -r requirements-dev.txt && maturin develop && python -m pytest . && rm -r /venv311
+RUN virtualenv -p python3.12 /venv312 && . /venv312/bin/activate && python -m pip install -r requirements-dev.txt && maturin develop && python -m pytest . && rm -r /venv312
 
 ENV RUSTFLAGS="-C target-feature=-crt-static"
-RUN maturin build --target x86_64-unknown-linux-musl --manylinux off --interpreter /opt/python/cp37-cp37m/bin/python /opt/python/cp38-cp38/bin/python /opt/python/cp39-cp39/bin/python /opt/python/cp310-cp310/bin/python /opt/python/cp311-cp311/bin/python
+RUN maturin build --target x86_64-unknown-linux-musl --manylinux off --interpreter /opt/python/cp37-cp37m/bin/python /opt/python/cp38-cp38/bin/python /opt/python/cp39-cp39/bin/python /opt/python/cp310-cp310/bin/python /opt/python/cp311-cp311/bin/python /opt/python/cp312-cp312/bin/python
 
-CMD ["maturin", "publish", "--interpreter", "/opt/python/cp37-cp37m/bin/python", "/opt/python/cp38-cp38/bin/python", "/opt/python/cp39-cp39/bin/python", "/opt/python/cp310-cp310/bin/python", "/opt/python/cp311-cp311/bin/python"]
+CMD ["maturin", "publish", "--interpreter", "/opt/python/cp37-cp37m/bin/python", "/opt/python/cp38-cp38/bin/python", "/opt/python/cp39-cp39/bin/python", "/opt/python/cp310-cp310/bin/python", "/opt/python/cp311-cp311/bin/python", "/opt/python/cp312-cp312/bin/python"]
