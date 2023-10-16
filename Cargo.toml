@@ -17,5 +17,5 @@ crate-type = ["cdylib"]
 parsepatch = "0.3"
 
 [dependencies.pyo3]
-version = "0.19"
+version = "0.20"
 features = ["extension-module"]
