@@ -11,7 +11,7 @@ pub(crate) enum Bytes<'a> {
 
 #[inline(always)]
 pub fn create_mode(old: Option<u32>, new: Option<u32>, py: &Python) -> PyObject {
-    let dict = PyDict::new(*py);
+    let dict = PyDict::new_bound(*py);
     if let Some(old) = old {
         dict.set_item("old", old).unwrap();
     }
@@ -23,7 +23,7 @@ pub fn create_mode(old: Option<u32>, new: Option<u32>, py: &Python) -> PyObject 
 
 #[inline(always)]
 pub fn create_file_mode(modes: Option<FileMode>, py: &Python) -> PyObject {
-    let dict = PyDict::new(*py);
+    let dict = PyDict::new_bound(*py);
     if let Some(modes) = modes {
         dict.set_item("old", modes.old).unwrap();
         dict.set_item("new", modes.new).unwrap();
@@ -37,12 +37,12 @@ pub fn create_bin_size(h: BinaryHunk, py: &Python) -> PyObject {
         BinaryHunk::Literal(s) => ("literal", s),
         BinaryHunk::Delta(s) => ("delta", s),
     };
-    PyTuple::new(*py, &[x.0.to_object(*py), x.1.to_object(*py)]).to_object(*py)
+    PyTuple::new_bound(*py, &[x.0.to_object(*py), x.1.to_object(*py)]).to_object(*py)
 }
 
 #[inline(always)]
 pub fn set_info(
-    diff: &PyDict,
+    diff: &Bound<'_, PyDict>,
     old_name: &str,
     new_name: &str,
     op: FileOp,
@@ -113,11 +113,11 @@ pub fn set_info(
 
 #[inline(always)]
 pub(crate) fn get_bytes<'a>(py: Python<'a>, bytes: &'a PyObject) -> Option<Bytes<'a>> {
-    if let Ok(bytes) = PyBytes::try_from(bytes.as_ref(py)) {
+    if let Ok(bytes) = bytes.bind(py).downcast::<PyBytes>() {
         Some(Bytes::Slice(bytes.as_bytes()))
-    } else if let Ok(bytes) = PyString::try_from(bytes.as_ref(py)) {
+    } else if let Ok(bytes) = bytes.bind(py).downcast::<PyString>() {
         Some(Bytes::Slice(bytes.to_str().unwrap().as_bytes()))
-    } else if let Ok(bytes) = PyByteArray::try_from(bytes.as_ref(py)) {
+    } else if let Ok(bytes) = bytes.bind(py).downcast::<PyByteArray>() {
         Some(Bytes::Vec(bytes.to_vec()))
     } else {
         None
