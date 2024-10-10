@@ -1,10 +1,11 @@
 use parsepatch::{BinaryHunk, Diff, FileMode, FileOp, Patch};
+use pyo3::prelude::PyDictMethods;
 use pyo3::types::{PyBytes, PyDict, PyTuple};
-use pyo3::{PyObject, PyResult, Python, ToPyObject};
+use pyo3::{Bound, PyObject, PyResult, Python, ToPyObject};
 
 pub struct PyDiff<'a> {
     py: Python<'a>,
-    diff: &'a PyDict,
+    diff: Bound<'a, PyDict>,
     lines: Vec<PyObject>,
     hunks: Vec<Vec<PyObject>>,
     has_hunks: bool,
@@ -14,7 +15,7 @@ impl<'a> PyDiff<'a> {
     fn new(py: Python<'a>, has_hunks: bool) -> Self {
         PyDiff {
             py,
-            diff: PyDict::new(py),
+            diff: PyDict::new_bound(py),
             lines: Vec::new(),
             hunks: Vec::new(),
             has_hunks,
@@ -92,7 +93,7 @@ impl<'a> Diff for PyDiff<'a> {
         file_mode: Option<FileMode>,
     ) {
         crate::common::set_info(
-            self.diff,
+            &self.diff,
             old_name,
             new_name,
             op,
@@ -103,12 +104,12 @@ impl<'a> Diff for PyDiff<'a> {
     }
 
     fn add_line(&mut self, old_line: u32, new_line: u32, line: &[u8]) {
-        let line = PyTuple::new(
+        let line = PyTuple::new_bound(
             self.py,
             &[
                 self.get_line(old_line),
                 self.get_line(new_line),
-                PyBytes::new(self.py, line).to_object(self.py),
+                PyBytes::new_bound(self.py, line).to_object(self.py),
             ],
         )
         .to_object(self.py);

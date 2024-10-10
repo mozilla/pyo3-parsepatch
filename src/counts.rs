@@ -1,10 +1,11 @@
 use parsepatch::{BinaryHunk, Diff, FileMode, FileOp, Patch};
+use pyo3::prelude::PyDictMethods;
 use pyo3::types::PyDict;
-use pyo3::{PyObject, PyResult, Python, ToPyObject};
+use pyo3::{Bound, PyObject, PyResult, Python, ToPyObject};
 
 pub struct PyDiff<'a> {
     py: Python<'a>,
-    diff: &'a PyDict,
+    diff: Bound<'a, PyDict>,
     add: u32,
     del: u32,
 }
@@ -13,7 +14,7 @@ impl<'a> PyDiff<'a> {
     fn new(py: Python<'a>) -> Self {
         PyDiff {
             py,
-            diff: PyDict::new(py),
+            diff: PyDict::new_bound(py),
             add: 0,
             del: 0,
         }
@@ -70,7 +71,7 @@ impl<'a> Diff for PyDiff<'a> {
         file_mode: Option<FileMode>,
     ) {
         crate::common::set_info(
-            self.diff,
+            &self.diff,
             old_name,
             new_name,
             op,
