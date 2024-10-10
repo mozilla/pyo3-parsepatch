@@ -1,10 +1,10 @@
 # Almost a copy/paste from: https://github.com/PyO3/pyo3-pack/blob/master/Dockerfile
 
-FROM quay.io/pypa/manylinux2014_x86_64
+FROM quay.io/pypa/manylinux2014_x86_64:latest
 
 ENV PATH /root/.cargo/bin:$PATH
 # Add all supported python versions
-ENV PATH /opt/python/cp37-cp37m/bin/:/opt/python/cp38-cp38/bin/:/opt/python/cp39-cp39/bin/:/opt/python/cp310-cp310/bin:/opt/python/cp311-cp311:/bin/opt/python/cp312-cp312/bin:$PATH
+ENV PATH /opt/python/cp37-cp37m/bin/:/opt/python/cp38-cp38/bin/:/opt/python/cp39-cp39/bin/:/opt/python/cp310-cp310/bin:/opt/python/cp311-cp311:/opt/python/cp312-cp312/bin:/opt/python/cp313-cp313/bin:$PATH
 # Otherwise `cargo new` errors
 ENV USER root
 
@@ -21,7 +21,7 @@ RUN curl https://www.musl-libc.org/releases/musl-1.1.20.tar.gz -o musl.tar.gz \
     && rustup toolchain install nightly --target x86_64-unknown-linux-musl \
     && rustup default nightly \
     && yum install -y libffi-devel \
-    && python3 -m pip install --no-cache-dir virtualenv \
+    && pip3.13 install --no-cache-dir virtualenv \
     && cargo install --locked maturin
 
 WORKDIR /rs_pp
@@ -42,6 +42,6 @@ RUN virtualenv -p python3.11 /venv311 && . /venv311/bin/activate && python -m pi
 RUN virtualenv -p python3.12 /venv312 && . /venv312/bin/activate && python -m pip install -r requirements-dev.txt && maturin develop && python -m pytest . && rm -r /venv312
 
 ENV RUSTFLAGS="-C target-feature=-crt-static"
-RUN maturin build --target x86_64-unknown-linux-musl --manylinux off --interpreter /opt/python/cp37-cp37m/bin/python /opt/python/cp38-cp38/bin/python /opt/python/cp39-cp39/bin/python /opt/python/cp310-cp310/bin/python /opt/python/cp311-cp311/bin/python /opt/python/cp312-cp312/bin/python
+RUN maturin build --target x86_64-unknown-linux-musl --manylinux off --interpreter python3.7 python3.8 python3.9 python3.10 python3.11 python3.12 python3.13
 
-CMD ["maturin", "publish", "--interpreter", "/opt/python/cp37-cp37m/bin/python", "/opt/python/cp38-cp38/bin/python", "/opt/python/cp39-cp39/bin/python", "/opt/python/cp310-cp310/bin/python", "/opt/python/cp311-cp311/bin/python", "/opt/python/cp312-cp312/bin/python"]
+CMD ["maturin", "publish", "--interpreter", "python3.7", "python3.8", "python3.9", "python3.10", "python3.11", "python3.12", "python3.13"]
