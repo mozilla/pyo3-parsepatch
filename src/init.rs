@@ -42,7 +42,7 @@ macro_rules! parse_patch {
 /// If the hunks=True is passed as argument then the lines are gathered by hunk
 fn get_diffs(py: Python, bytes: PyObject, kwargs: Option<&PyDict>) -> PyResult<PyObject> {
     let hunks = if let Some(kwargs) = kwargs {
-        kwargs.get_item("hunks").map_or(false, |h| {
+        kwargs.get_item("hunks")?.map_or(false, |h| {
             PyBool::try_from(h).ok().map_or(false, |h| h.is_true())
         })
     } else {
