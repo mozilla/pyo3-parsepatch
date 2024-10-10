@@ -58,10 +58,10 @@ fn get_diffs(
     if let Some(bytes) = crate::common::get_bytes(py, &bytes) {
         match bytes {
             crate::common::Bytes::Slice(bytes) => {
-                PatchReader::by_buf(bytes, &mut patch).map_err(|e| PPError(e))?
+                PatchReader::by_buf(bytes, &mut patch).map_err(PPError)?
             }
             crate::common::Bytes::Vec(bytes) => {
-                PatchReader::by_buf(&bytes, &mut patch).map_err(|e| PPError(e))?
+                PatchReader::by_buf(&bytes, &mut patch).map_err(PPError)?
             }
         }
     } else {
