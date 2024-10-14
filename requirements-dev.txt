@@ -1,3 +1,3 @@
 pytest==8.3.3
-whatthepatch==1.0.3
+whatthepatch==1.0.6
 cffi==1.17.1
