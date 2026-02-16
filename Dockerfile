@@ -43,11 +43,15 @@ COPY Cargo.* ./
 COPY pyproject.toml ./
 COPY README.md README.md
 
-RUN virtualenv -p python3.10 /venv310 && . /venv310/bin/activate && python -m pip install -r requirements-dev.txt && maturin develop && python -m pytest . && rm -r /venv310
-RUN virtualenv -p python3.11 /venv311 && . /venv311/bin/activate && python -m pip install -r requirements-dev.txt && maturin develop && python -m pytest . && rm -r /venv311
-RUN virtualenv -p python3.12 /venv312 && . /venv312/bin/activate && python -m pip install -r requirements-dev.txt && maturin develop && python -m pytest . && rm -r /venv312
-RUN virtualenv -p python3.13 /venv313 && . /venv313/bin/activate && python -m pip install -r requirements-dev.txt && maturin develop && python -m pytest . && rm -r /venv313
-RUN virtualenv -p python3.14 /venv314 && . /venv314/bin/activate && python -m pip install -r requirements-dev.txt && maturin develop && python -m pytest . && rm -r /venv314
+RUN for py in 3.10 3.11 3.12 3.13 3.14; do \
+      venv="/venv${py/./}"; \
+      virtualenv -p "python${py}" "${venv}" \
+      && ( . "${venv}/bin/activate" \
+      && python -m pip install -r requirements-dev.txt \
+      && maturin develop \
+      && python -m pytest . ) \
+      && rm -r "${venv}"; \
+    done
 
 
 ENV RUSTFLAGS="-C target-feature=-crt-static"
