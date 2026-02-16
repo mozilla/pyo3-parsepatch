@@ -1,7 +1,7 @@
 use parsepatch::{BinaryHunk, FileMode, FileOp};
 use pyo3::prelude::*;
 use pyo3::types::PyDict;
-use pyo3::types::{PyByteArray, PyBytes, PyString, PyTuple};
+use pyo3::types::{PyByteArray, PyBytes, PyString};
 use pyo3::Python;
 
 pub(crate) enum Bytes<'a> {
@@ -11,7 +11,7 @@ pub(crate) enum Bytes<'a> {
 
 #[inline(always)]
 pub fn create_mode(old: Option<u32>, new: Option<u32>, py: &Python) -> Py<PyAny> {
-    let dict = PyDict::new_bound(*py);
+    let dict = PyDict::new(*py);
     if let Some(old) = old {
         dict.set_item("old", old).unwrap();
     }
@@ -23,7 +23,7 @@ pub fn create_mode(old: Option<u32>, new: Option<u32>, py: &Python) -> Py<PyAny>
 
 #[inline(always)]
 pub fn create_file_mode(modes: Option<FileMode>, py: &Python) -> Py<PyAny> {
-    let dict = PyDict::new_bound(*py);
+    let dict = PyDict::new(*py);
     if let Some(modes) = modes {
         dict.set_item("old", modes.old).unwrap();
         dict.set_item("new", modes.new).unwrap();

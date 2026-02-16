@@ -15,7 +15,7 @@ impl<'a> PyDiff<'a> {
     fn new(py: Python<'a>, has_hunks: bool) -> Self {
         PyDiff {
             py,
-            diff: PyDict::new_bound(py),
+            diff: PyDict::new(py),
             lines: Vec::new(),
             hunks: Vec::new(),
             has_hunks,
@@ -104,14 +104,15 @@ impl<'a> Diff for PyDiff<'a> {
     }
 
     fn add_line(&mut self, old_line: u32, new_line: u32, line: &[u8]) {
-        let line = PyTuple::new_bound(
+        let line = PyTuple::new(
             self.py,
             &[
                 self.get_line(old_line),
                 self.get_line(new_line),
-                PyBytes::new_bound(self.py, line).into_any().unbind(),
+                PyBytes::new(self.py, line).into_any().unbind(),
             ],
         )
+        .unwrap()
         .into_any()
         .unbind();
 

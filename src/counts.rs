@@ -14,7 +14,7 @@ impl<'a> PyDiff<'a> {
     fn new(py: Python<'a>) -> Self {
         PyDiff {
             py,
-            diff: PyDict::new_bound(py),
+            diff: PyDict::new(py),
             add: 0,
             del: 0,
         }
