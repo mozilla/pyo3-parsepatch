@@ -35,13 +35,13 @@ RUN curl -fsSL https://www.musl-libc.org/releases/musl-1.1.20.tar.gz -o musl.tar
 
 WORKDIR /rs_pp
 
-ADD requirements-dev.txt .
+COPY requirements-dev.txt .
 
-ADD src src
-ADD tests tests
-ADD Cargo.* ./
-ADD pyproject.toml ./
-ADD README.md README.md
+COPY src src
+COPY tests tests
+COPY Cargo.* ./
+COPY pyproject.toml ./
+COPY README.md README.md
 
 RUN virtualenv -p python3.10 /venv310 && . /venv310/bin/activate && python -m pip install -r requirements-dev.txt && maturin develop && python -m pytest . && rm -r /venv310
 RUN virtualenv -p python3.11 /venv311 && . /venv311/bin/activate && python -m pip install -r requirements-dev.txt && maturin develop && python -m pytest . && rm -r /venv311
