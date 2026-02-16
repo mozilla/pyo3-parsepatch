@@ -1,12 +1,13 @@
 # Almost a copy/paste from: https://github.com/PyO3/pyo3-pack/blob/master/Dockerfile
 
-FROM quay.io/pypa/manylinux2014_x86_64:latest
+FROM quay.io/pypa/manylinux2014_x86_64@sha256:4e399b6b7f2eb9cfd8a769efb2d0268061df939fa95ea12008b89b44dea56ce3
 
 ENV PATH /root/.cargo/bin:$PATH
 # Add all supported python versions
 ENV PATH /opt/python/cp310-cp310/bin:/opt/python/cp311-cp311/bin:/opt/python/cp312-cp312/bin:/opt/python/cp313-cp313/bin:/opt/python/cp314-cp314/bin:$PATH
 # Otherwise `cargo new` errors
 ENV USER root
+ENV MATURIN_VERSION=1.12.2
 
 RUN curl https://www.musl-libc.org/releases/musl-1.1.20.tar.gz -o musl.tar.gz \
     && tar -xzf musl.tar.gz \
@@ -22,7 +23,7 @@ RUN curl https://www.musl-libc.org/releases/musl-1.1.20.tar.gz -o musl.tar.gz \
     && rustup default nightly \
     && yum install -y libffi-devel \
     && pip3.14 install --no-cache-dir virtualenv \
-    && cargo install --locked maturin
+    && cargo install --locked maturin --version ${MATURIN_VERSION}
 
 WORKDIR /rs_pp
 
