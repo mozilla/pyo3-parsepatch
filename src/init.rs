@@ -47,7 +47,7 @@ fn get_diffs(
 ) -> PyResult<Py<PyAny>> {
     let hunks = if let Some(kwargs) = kwargs {
         kwargs.get_item("hunks")?.map_or(false, |h| {
-            h.downcast::<PyBool>().ok().map_or(false, |h| h.is_true())
+            h.cast::<PyBool>().ok().map_or(false, |h| h.is_true())
         })
     } else {
         false

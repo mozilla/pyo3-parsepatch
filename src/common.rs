@@ -112,11 +112,12 @@ pub fn set_info(
 
 #[inline(always)]
 pub(crate) fn get_bytes<'a>(py: Python<'a>, bytes: &'a Py<PyAny>) -> Option<Bytes<'a>> {
-    if let Ok(bytes) = bytes.bind(py).downcast::<PyBytes>() {
+    let bytes = bytes.bind(py);
+    if let Ok(bytes) = bytes.cast::<PyBytes>() {
         Some(Bytes::Slice(bytes.as_bytes()))
-    } else if let Ok(bytes) = bytes.bind(py).downcast::<PyString>() {
+    } else if let Ok(bytes) = bytes.cast::<PyString>() {
         Some(Bytes::Slice(bytes.to_str().unwrap().as_bytes()))
-    } else if let Ok(bytes) = bytes.bind(py).downcast::<PyByteArray>() {
+    } else if let Ok(bytes) = bytes.cast::<PyByteArray>() {
         Some(Bytes::Vec(bytes.to_vec()))
     } else {
         None
