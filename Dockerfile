@@ -8,8 +8,12 @@ ENV PATH /opt/python/cp310-cp310/bin:/opt/python/cp311-cp311/bin:/opt/python/cp3
 # Otherwise `cargo new` errors
 ENV USER root
 ENV MATURIN_VERSION=1.12.2
+ARG MUSL_SHA256=44be8771d0e6c6b5f82dd15662eb2957c9a3173a19a8b49966ac0542bbd40d61
+ARG RUSTUP_VERSION=1.28.2
+ARG RUSTUP_INIT_SHA256=20a06e644b0d9bd2fbdbfd52d42540bdde820ea7df86e92e533c073da0cdd43c
 
-RUN curl https://www.musl-libc.org/releases/musl-1.1.20.tar.gz -o musl.tar.gz \
+RUN curl -fsSL https://www.musl-libc.org/releases/musl-1.1.20.tar.gz -o musl.tar.gz \
+    && echo "${MUSL_SHA256}  musl.tar.gz" | sha256sum -c - \
     && tar -xzf musl.tar.gz \
     && rm -f musl.tar.gz \
     && cd musl-1.1.20 \
@@ -17,7 +21,11 @@ RUN curl https://www.musl-libc.org/releases/musl-1.1.20.tar.gz -o musl.tar.gz \
     && make install -j$(expr $(nproc) \+ 1) \
     && cd .. \
     && rm -rf x86_64-unknown-linux-musl \
-    && curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain none -y \
+    && curl -fsSL https://static.rust-lang.org/rustup/archive/${RUSTUP_VERSION}/x86_64-unknown-linux-gnu/rustup-init -o rustup-init \
+    && echo "${RUSTUP_INIT_SHA256}  rustup-init" | sha256sum -c - \
+    && chmod +x rustup-init \
+    && ./rustup-init --default-toolchain none -y \
+    && rm -f rustup-init \
     && rustup set profile minimal \
     && rustup toolchain install nightly --target x86_64-unknown-linux-musl \
     && rustup default nightly \
