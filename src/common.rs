@@ -18,7 +18,7 @@ pub fn create_mode(old: Option<u32>, new: Option<u32>, py: &Python) -> Py<PyAny>
     if let Some(new) = new {
         dict.set_item("new", new).unwrap();
     }
-    dict.to_object(*py)
+    dict.into_any().unbind()
 }
 
 #[inline(always)]
@@ -28,7 +28,7 @@ pub fn create_file_mode(modes: Option<FileMode>, py: &Python) -> Py<PyAny> {
         dict.set_item("old", modes.old).unwrap();
         dict.set_item("new", modes.new).unwrap();
     }
-    dict.to_object(*py)
+    dict.into_any().unbind()
 }
 
 #[inline(always)]
@@ -37,7 +37,7 @@ pub fn create_bin_size(h: BinaryHunk, py: &Python) -> Py<PyAny> {
         BinaryHunk::Literal(s) => ("literal", s),
         BinaryHunk::Delta(s) => ("delta", s),
     };
-    PyTuple::new_bound(*py, &[x.0.to_object(*py), x.1.to_object(*py)]).to_object(*py)
+    (x.0, x.1).into_pyobject(*py).unwrap().into_any().unbind()
 }
 
 #[inline(always)]
@@ -104,8 +104,7 @@ pub fn set_info(
             .drain(..)
             .map(move |x| create_bin_size(x, py))
             .collect();
-        diff.set_item("binary_hunk_size", sizes.to_object(*py))
-            .unwrap();
+        diff.set_item("binary_hunk_size", sizes).unwrap();
     } else {
         diff.set_item("binary", false).unwrap();
     }
