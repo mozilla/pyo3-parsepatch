@@ -1,7 +1,7 @@
 use parsepatch::{BinaryHunk, Diff, FileMode, FileOp, Patch};
 use pyo3::prelude::PyDictMethods;
 use pyo3::types::PyDict;
-use pyo3::{Bound, PyObject, PyResult, Python, ToPyObject};
+use pyo3::{Bound, Py, PyAny, PyResult, Python, ToPyObject};
 
 pub struct PyDiff<'a> {
     py: Python<'a>,
@@ -45,9 +45,9 @@ impl<'a> Patch<PyDiff<'a>> for PyPatch<'a> {
 }
 
 impl<'a> PyPatch<'a> {
-    pub fn get_result(mut self) -> PyResult<PyObject> {
+    pub fn get_result(mut self) -> PyResult<Py<PyAny>> {
         let py = self.py;
-        let diffs: Vec<PyObject> = self
+        let diffs: Vec<Py<PyAny>> = self
             .diffs
             .drain(..)
             .map(move |x| {
