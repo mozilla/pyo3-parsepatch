@@ -27,8 +27,8 @@ RUN curl -fsSL https://www.musl-libc.org/releases/musl-1.1.20.tar.gz -o musl.tar
     && ./rustup-init --default-toolchain none -y \
     && rm -f rustup-init \
     && rustup set profile minimal \
-    && rustup toolchain install nightly --target x86_64-unknown-linux-musl \
-    && rustup default nightly \
+    && rustup toolchain install stable --target x86_64-unknown-linux-musl \
+    && rustup default stable \
     && yum install -y libffi-devel \
     && pip3.14 install --no-cache-dir virtualenv \
     && cargo install --locked maturin --version ${MATURIN_VERSION}
