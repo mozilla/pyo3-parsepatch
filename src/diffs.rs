@@ -1,7 +1,7 @@
 use parsepatch::{BinaryHunk, Diff, FileMode, FileOp, Patch};
 use pyo3::prelude::PyDictMethods;
 use pyo3::types::{PyBytes, PyDict, PyTuple};
-use pyo3::{Bound, Py, PyAny, PyResult, Python, ToPyObject};
+use pyo3::{Bound, IntoPyObject, Py, PyAny, PyResult, Python};
 
 pub struct PyDiff<'a> {
     py: Python<'a>,
@@ -26,7 +26,7 @@ impl<'a> PyDiff<'a> {
         if line == 0 {
             self.py.None()
         } else {
-            line.to_object(self.py)
+            line.into_pyobject(self.py).unwrap().into_any().unbind()
         }
     }
 }
@@ -64,21 +64,21 @@ impl<'a> PyPatch<'a> {
                 .diffs
                 .drain(..)
                 .map(move |x| {
-                    x.diff.set_item("hunks", x.hunks.to_object(py)).unwrap();
-                    x.diff.to_object(py)
+                    x.diff.set_item("hunks", x.hunks).unwrap();
+                    x.diff.into_any().unbind()
                 })
                 .collect();
-            Ok(diffs.to_object(self.py))
+            Ok(diffs.into_pyobject(py)?.into_any().unbind())
         } else {
             let diffs: Vec<Py<PyAny>> = self
                 .diffs
                 .drain(..)
                 .map(move |x| {
-                    x.diff.set_item("lines", x.lines.to_object(py)).unwrap();
-                    x.diff.to_object(py)
+                    x.diff.set_item("lines", x.lines).unwrap();
+                    x.diff.into_any().unbind()
                 })
                 .collect();
-            Ok(diffs.to_object(self.py))
+            Ok(diffs.into_pyobject(py)?.into_any().unbind())
         }
     }
 }
@@ -109,10 +109,11 @@ impl<'a> Diff for PyDiff<'a> {
             &[
                 self.get_line(old_line),
                 self.get_line(new_line),
-                PyBytes::new_bound(self.py, line).to_object(self.py),
+                PyBytes::new_bound(self.py, line).into_any().unbind(),
             ],
         )
-        .to_object(self.py);
+        .into_any()
+        .unbind();
 
         if self.has_hunks {
             self.hunks.last_mut().unwrap().push(line);

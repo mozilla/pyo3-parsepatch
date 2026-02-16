@@ -1,7 +1,7 @@
 use parsepatch::{BinaryHunk, Diff, FileMode, FileOp, Patch};
 use pyo3::prelude::PyDictMethods;
 use pyo3::types::PyDict;
-use pyo3::{Bound, Py, PyAny, PyResult, Python, ToPyObject};
+use pyo3::{Bound, IntoPyObject, Py, PyAny, PyResult, Python};
 
 pub struct PyDiff<'a> {
     py: Python<'a>,
@@ -53,11 +53,11 @@ impl<'a> PyPatch<'a> {
             .map(move |x| {
                 x.diff.set_item("added_lines", x.add).unwrap();
                 x.diff.set_item("deleted_lines", x.del).unwrap();
-                x.diff.to_object(py)
+                x.diff.into_any().unbind()
             })
             .collect();
 
-        Ok(diffs.to_object(self.py))
+        Ok(diffs.into_pyobject(py)?.into_any().unbind())
     }
 }
 
