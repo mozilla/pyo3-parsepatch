@@ -10,7 +10,7 @@ pub(crate) enum Bytes<'a> {
 }
 
 #[inline(always)]
-pub fn create_mode(old: Option<u32>, new: Option<u32>, py: &Python) -> PyObject {
+pub fn create_mode(old: Option<u32>, new: Option<u32>, py: &Python) -> Py<PyAny> {
     let dict = PyDict::new_bound(*py);
     if let Some(old) = old {
         dict.set_item("old", old).unwrap();
@@ -22,7 +22,7 @@ pub fn create_mode(old: Option<u32>, new: Option<u32>, py: &Python) -> PyObject 
 }
 
 #[inline(always)]
-pub fn create_file_mode(modes: Option<FileMode>, py: &Python) -> PyObject {
+pub fn create_file_mode(modes: Option<FileMode>, py: &Python) -> Py<PyAny> {
     let dict = PyDict::new_bound(*py);
     if let Some(modes) = modes {
         dict.set_item("old", modes.old).unwrap();
@@ -32,7 +32,7 @@ pub fn create_file_mode(modes: Option<FileMode>, py: &Python) -> PyObject {
 }
 
 #[inline(always)]
-pub fn create_bin_size(h: BinaryHunk, py: &Python) -> PyObject {
+pub fn create_bin_size(h: BinaryHunk, py: &Python) -> Py<PyAny> {
     let x = match h {
         BinaryHunk::Literal(s) => ("literal", s),
         BinaryHunk::Delta(s) => ("delta", s),
@@ -100,7 +100,7 @@ pub fn set_info(
 
     if let Some(mut binary_sizes) = binary_sizes {
         diff.set_item("binary", true).unwrap();
-        let sizes: Vec<PyObject> = binary_sizes
+        let sizes: Vec<Py<PyAny>> = binary_sizes
             .drain(..)
             .map(move |x| create_bin_size(x, py))
             .collect();
@@ -112,7 +112,7 @@ pub fn set_info(
 }
 
 #[inline(always)]
-pub(crate) fn get_bytes<'a>(py: Python<'a>, bytes: &'a PyObject) -> Option<Bytes<'a>> {
+pub(crate) fn get_bytes<'a>(py: Python<'a>, bytes: &'a Py<PyAny>) -> Option<Bytes<'a>> {
     if let Ok(bytes) = bytes.bind(py).downcast::<PyBytes>() {
         Some(Bytes::Slice(bytes.as_bytes()))
     } else if let Ok(bytes) = bytes.bind(py).downcast::<PyString>() {

@@ -1,13 +1,13 @@
 use parsepatch::{BinaryHunk, Diff, FileMode, FileOp, Patch};
 use pyo3::prelude::PyDictMethods;
 use pyo3::types::{PyBytes, PyDict, PyTuple};
-use pyo3::{Bound, PyObject, PyResult, Python, ToPyObject};
+use pyo3::{Bound, Py, PyAny, PyResult, Python, ToPyObject};
 
 pub struct PyDiff<'a> {
     py: Python<'a>,
     diff: Bound<'a, PyDict>,
-    lines: Vec<PyObject>,
-    hunks: Vec<Vec<PyObject>>,
+    lines: Vec<Py<PyAny>>,
+    hunks: Vec<Vec<Py<PyAny>>>,
     has_hunks: bool,
 }
 
@@ -22,7 +22,7 @@ impl<'a> PyDiff<'a> {
         }
     }
 
-    fn get_line(&self, line: u32) -> PyObject {
+    fn get_line(&self, line: u32) -> Py<PyAny> {
         if line == 0 {
             self.py.None()
         } else {
@@ -57,10 +57,10 @@ impl<'a> Patch<PyDiff<'a>> for PyPatch<'a> {
 }
 
 impl<'a> PyPatch<'a> {
-    pub fn get_result(mut self) -> PyResult<PyObject> {
+    pub fn get_result(mut self) -> PyResult<Py<PyAny>> {
         let py = self.py;
         if self.hunks {
-            let diffs: Vec<PyObject> = self
+            let diffs: Vec<Py<PyAny>> = self
                 .diffs
                 .drain(..)
                 .map(move |x| {
@@ -70,7 +70,7 @@ impl<'a> PyPatch<'a> {
                 .collect();
             Ok(diffs.to_object(self.py))
         } else {
-            let diffs: Vec<PyObject> = self
+            let diffs: Vec<Py<PyAny>> = self
                 .diffs
                 .drain(..)
                 .map(move |x| {

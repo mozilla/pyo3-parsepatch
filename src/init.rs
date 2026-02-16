@@ -2,7 +2,7 @@ use parsepatch::{ParsepatchError, PatchReader};
 use pyo3::exceptions::{PyRuntimeError, PyTypeError};
 use pyo3::prelude::*;
 use pyo3::types::{PyBool, PyDict, PyModule};
-use pyo3::{PyErr, Python};
+use pyo3::{Py, PyAny, PyErr, Python};
 
 struct PPError(ParsepatchError);
 
@@ -42,9 +42,9 @@ macro_rules! parse_patch {
 /// If the hunks=True is passed as argument then the lines are gathered by hunk
 fn get_diffs(
     py: Python,
-    bytes: PyObject,
+    bytes: Py<PyAny>,
     kwargs: Option<&Bound<'_, PyDict>>,
-) -> PyResult<PyObject> {
+) -> PyResult<Py<PyAny>> {
     let hunks = if let Some(kwargs) = kwargs {
         kwargs.get_item("hunks")?.map_or(false, |h| {
             h.downcast::<PyBool>().ok().map_or(false, |h| h.is_true())
@@ -73,13 +73,13 @@ fn get_diffs(
 
 #[pyfunction]
 /// Get the number of added/deleted lines for each file in the patch
-fn get_counts(py: Python, bytes: PyObject) -> PyResult<PyObject> {
+fn get_counts(py: Python, bytes: Py<PyAny>) -> PyResult<Py<PyAny>> {
     parse_patch!(py, bytes, counts)
 }
 
 #[pyfunction]
 /// Get the added/deleted line numbers for each file in the patch
-fn get_lines(py: Python, bytes: PyObject) -> PyResult<PyObject> {
+fn get_lines(py: Python, bytes: Py<PyAny>) -> PyResult<Py<PyAny>> {
     parse_patch!(py, bytes, lines)
 }
 
