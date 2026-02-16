@@ -4,7 +4,7 @@ FROM quay.io/pypa/manylinux2014_x86_64:latest
 
 ENV PATH /root/.cargo/bin:$PATH
 # Add all supported python versions
-ENV PATH /opt/python/cp310-cp310/bin:/opt/python/cp311-cp311:/opt/python/cp312-cp312/bin:/opt/python/cp313-cp313/bin:$PATH
+ENV PATH /opt/python/cp310-cp310/bin:/opt/python/cp311-cp311:/opt/python/cp312-cp312/bin:/opt/python/cp313-cp313/bin:/opt/python/cp314-cp314/bin:$PATH
 # Otherwise `cargo new` errors
 ENV USER root
 
@@ -21,7 +21,7 @@ RUN curl https://www.musl-libc.org/releases/musl-1.1.20.tar.gz -o musl.tar.gz \
     && rustup toolchain install nightly --target x86_64-unknown-linux-musl \
     && rustup default nightly \
     && yum install -y libffi-devel \
-    && pip3.13 install --no-cache-dir virtualenv \
+    && pip3.14 install --no-cache-dir virtualenv \
     && cargo install --locked maturin
 
 WORKDIR /rs_pp
@@ -38,8 +38,10 @@ RUN virtualenv -p python3.10 /venv310 && . /venv310/bin/activate && python -m pi
 RUN virtualenv -p python3.11 /venv311 && . /venv311/bin/activate && python -m pip install -r requirements-dev.txt && maturin develop && python -m pytest . && rm -r /venv311
 RUN virtualenv -p python3.12 /venv312 && . /venv312/bin/activate && python -m pip install -r requirements-dev.txt && maturin develop && python -m pytest . && rm -r /venv312
 RUN virtualenv -p python3.13 /venv313 && . /venv313/bin/activate && python -m pip install -r requirements-dev.txt && maturin develop && python -m pytest . && rm -r /venv313
+RUN virtualenv -p python3.14 /venv314 && . /venv314/bin/activate && python -m pip install -r requirements-dev.txt && maturin develop && python -m pytest . && rm -r /venv314
+
 
 ENV RUSTFLAGS="-C target-feature=-crt-static"
-RUN maturin build --target x86_64-unknown-linux-musl --manylinux off --interpreter python3.10 python3.11 python3.12 python3.13
+RUN maturin build --target x86_64-unknown-linux-musl --manylinux off --interpreter python3.10 python3.11 python3.12 python3.13 python3.14
 
-CMD ["maturin", "publish", "--interpreter", "python3.10", "python3.11", "python3.12", "python3.13"]
+CMD ["maturin", "publish", "--interpreter", "python3.10", "python3.11", "python3.12", "python3.13", "python3.14"]
