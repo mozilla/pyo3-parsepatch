@@ -8,15 +8,16 @@ ENV PATH /opt/python/cp310-cp310/bin:/opt/python/cp311-cp311/bin:/opt/python/cp3
 # Otherwise `cargo new` errors
 ENV USER root
 ENV MATURIN_VERSION=1.12.2
-ARG MUSL_SHA256=44be8771d0e6c6b5f82dd15662eb2957c9a3173a19a8b49966ac0542bbd40d61
+ARG MUSL_VERSION=1.2.5
+ARG MUSL_SHA256=a9a118bbe84d8764da0ea0d28b3ab3fae8477fc7e4085d90102b8596fc7c75e4
 ARG RUSTUP_VERSION=1.28.2
 ARG RUSTUP_INIT_SHA256=20a06e644b0d9bd2fbdbfd52d42540bdde820ea7df86e92e533c073da0cdd43c
 
-RUN curl -fsSL https://www.musl-libc.org/releases/musl-1.1.20.tar.gz -o musl.tar.gz \
+RUN curl -fsSL https://www.musl-libc.org/releases/musl-${MUSL_VERSION}.tar.gz -o musl.tar.gz \
     && echo "${MUSL_SHA256}  musl.tar.gz" | sha256sum -c - \
     && tar -xzf musl.tar.gz \
     && rm -f musl.tar.gz \
-    && cd musl-1.1.20 \
+    && cd musl-${MUSL_VERSION} \
     && ./configure \
     && make install -j$(expr $(nproc) \+ 1) \
     && cd .. \
