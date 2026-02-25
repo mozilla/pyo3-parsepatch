@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "rs_parsepatch"
-version = "0.4.5"
+version = "0.4.6"
 classifier = [
     "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
     "Programming Language :: Python :: 3",
