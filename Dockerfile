@@ -1,6 +1,6 @@
 # Almost a copy/paste from: https://github.com/PyO3/pyo3-pack/blob/master/Dockerfile
 
-FROM quay.io/pypa/manylinux2014_x86_64@sha256:ae8ffd04169d777791ff9420bfe3fdcd50f8640099459528a0fe42c3faf85aff
+FROM quay.io/pypa/manylinux2014_x86_64@sha256:0d25b049964b2549b83384036abdff06789a8c0b1e9ff003ec80f0d531f79e50
 
 ENV PATH /root/.cargo/bin:$PATH
 # Add all supported python versions
