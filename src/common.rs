@@ -1,4 +1,5 @@
 use parsepatch::{BinaryHunk, FileMode, FileOp};
+use pyo3::intern;
 use pyo3::prelude::*;
 use pyo3::types::PyDict;
 use pyo3::types::{PyByteArray, PyBytes, PyString};
@@ -111,15 +112,25 @@ pub fn set_info(
 }
 
 #[inline(always)]
-pub(crate) fn get_bytes<'a>(py: Python<'a>, bytes: &'a Py<PyAny>) -> Option<Bytes<'a>> {
+pub(crate) fn get_bytes<'a>(py: Python<'a>, bytes: &'a Py<PyAny>) -> PyResult<Option<Bytes<'a>>> {
     let bytes = bytes.bind(py);
-    if let Ok(bytes) = bytes.cast::<PyBytes>() {
+    Ok(if let Ok(bytes) = bytes.cast::<PyBytes>() {
         Some(Bytes::Slice(bytes.as_bytes()))
-    } else if let Ok(bytes) = bytes.cast::<PyString>() {
-        Some(Bytes::Slice(bytes.to_str().unwrap().as_bytes()))
+    } else if let Ok(string) = bytes.cast::<PyString>() {
+        match string.to_str() {
+            Ok(s) => Some(Bytes::Slice(s.as_bytes())),
+            Err(_) => {
+                // The string isn't valid UTF-8: it likely contains lone surrogates
+                // see (bug 2056454). Any other invalid string raises an
+                // UnicodeEncodeError.
+                let encoded =
+                    string.call_method1(intern!(py, "encode"), ("utf-8", "surrogateescape"))?;
+                Some(Bytes::Vec(encoded.cast::<PyBytes>()?.as_bytes().to_vec()))
+            }
+        }
     } else if let Ok(bytes) = bytes.cast::<PyByteArray>() {
         Some(Bytes::Vec(bytes.to_vec()))
     } else {
         None
-    }
+    })
 }

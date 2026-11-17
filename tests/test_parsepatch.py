@@ -4,6 +4,7 @@
 
 import copy
 import os
+import pytest
 import rs_parsepatch as pp
 import whatthepatch as wp
 
@@ -102,3 +103,33 @@ def test_pp():
     for patch in get_patch():
         patch = bytearray(patch)
         read(patch)
+
+
+def test_non_utf8_str():
+    # Bug 2056454: a patch with non UTF-8 data decoded with `surrogateescape`
+    # contains lone surrogates.
+    patch = (
+        b"diff --git a/f.der b/f.der\n"
+        b"new file mode 100644\n"
+        b"--- /dev/null\n"
+        b"+++ b/f.der\n"
+        b"@@ -0,0 +1 @@\n"
+        b"+\x06\x07*\x86H\xce=\x02\x01\n"
+    )
+    escaped = patch.decode("utf-8", errors="surrogateescape")
+
+    assert pp.get_diffs(escaped) == pp.get_diffs(patch)
+    assert pp.get_diffs(escaped, hunks=True) == pp.get_diffs(patch, hunks=True)
+    assert pp.get_counts(escaped) == pp.get_counts(patch)
+    assert pp.get_lines(escaped) == pp.get_lines(patch)
+
+    diffs = pp.get_diffs(escaped)
+    assert diffs[0]["lines"] == [(None, 1, b"\x06\x07*\x86H\xce=\x02\x01")]
+
+
+def test_invalid_str():
+    # A lone surrogate which can't come from "surrogateescape" must raise an
+    # exception, not a panic.
+    patch = "diff --git a/f b/f\n--- a/f\n+++ b/f\n@@ -1 +1 @@\n-a\n+\ud800\n"
+    with pytest.raises(UnicodeEncodeError):
+        pp.get_diffs(patch)

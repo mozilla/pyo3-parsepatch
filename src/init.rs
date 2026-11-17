@@ -16,7 +16,7 @@ macro_rules! parse_patch {
     ($py:path, $bytes:path, $v:ident) => {{
         let mut patch = crate::$v::PyPatch::new($py);
 
-        if let Some(bytes) = crate::common::get_bytes($py, &$bytes) {
+        if let Some(bytes) = crate::common::get_bytes($py, &$bytes)? {
             match bytes {
                 crate::common::Bytes::Slice(bytes) => {
                     PatchReader::by_buf(bytes, &mut patch).map_err(|e| PPError(e))?
@@ -55,7 +55,7 @@ fn get_diffs(
 
     let mut patch = crate::diffs::PyPatch::new(py, hunks);
 
-    if let Some(bytes) = crate::common::get_bytes(py, &bytes) {
+    if let Some(bytes) = crate::common::get_bytes(py, &bytes)? {
         match bytes {
             crate::common::Bytes::Slice(bytes) => {
                 PatchReader::by_buf(bytes, &mut patch).map_err(PPError)?
