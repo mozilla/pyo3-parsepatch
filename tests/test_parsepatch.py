@@ -75,6 +75,11 @@ def read(patch):
         else:
             assert ppd["renamed_from"] is None
 
+        if ppd["binary"]:
+            # whatthepatch decodes the binary hunks but we only report their sizes
+            assert not ppd["lines"]
+            continue
+
         if not wpd.changes:
             assert not ppd["lines"]
             continue
