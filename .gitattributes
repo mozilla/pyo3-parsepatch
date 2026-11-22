@@ -1,0 +1,2 @@
+# Keep the test patches byte-for-byte (no CRLF conversion on Windows checkouts).
+tests/patches/** -text

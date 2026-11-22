@@ -11,17 +11,13 @@ Published under the MPL 2.0 license.
 
 ## Publish
 
-Install docker and then:
+Bump the version in `Cargo.toml` and `pyproject.toml`, then push a matching tag:
 ```sh
-docker build -t rs_pp
+git tag v0.4.8
+git push origin v0.4.8
 ```
-It will compile everything and run tests in a manylinux environment.
-
-And then:
-```sh
-docker run -it rs_pp
-```
-to publish the packages on Pypi.
+The [release workflow](.github/workflows/release.yml) builds the wheels (manylinux, macOS
+universal2 and Windows x86_64) and the sdist, tests them and publishes them on PyPI.
 
 ## Contact
 

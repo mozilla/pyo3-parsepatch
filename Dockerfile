@@ -30,7 +30,6 @@ RUN curl -fsSL https://www.musl-libc.org/releases/musl-${MUSL_VERSION}.tar.gz -o
     && rustup set profile minimal \
     && rustup toolchain install stable --target x86_64-unknown-linux-musl \
     && rustup default stable \
-    && yum install -y libffi-devel \
     && pip3.14 install --no-cache-dir virtualenv \
     && cargo install --locked maturin --version ${MATURIN_VERSION}
 
@@ -57,5 +56,3 @@ RUN for py in 3.10 3.11 3.12 3.13 3.14 3.15; do \
 
 ENV RUSTFLAGS="-C target-feature=-crt-static"
 RUN maturin build --target x86_64-unknown-linux-musl --manylinux off --interpreter python3.10 python3.11 python3.12 python3.13 python3.14 python3.15
-
-CMD ["maturin", "publish", "--interpreter", "python3.10", "python3.11", "python3.12", "python3.13", "python3.14", "python3.15"]

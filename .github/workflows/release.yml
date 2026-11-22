@@ -1,0 +1,148 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  MATURIN_VERSION: "1.16.0"
+  # Keep in sync with the Dockerfile, macOS/Windows setup, and test matrix.
+  INTERPRETERS: python3.10 python3.11 python3.12 python3.13 python3.14 python3.15
+
+jobs:
+  wheels:
+    name: Build wheels (${{ matrix.target }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            manylinux: "2014"
+            # Keep this digest in sync with the Dockerfile.
+            container: quay.io/pypa/manylinux2014_x86_64@sha256:e6a785657009c612fe2a85fa933051d03a50ba62b1c5e47d62abcab546a2e423
+          - os: macos-latest
+            target: universal2-apple-darwin
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+    runs-on: ${{ matrix.os }}
+    steps:
+      - &checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # The Linux build runs in the manylinux container, which has all the interpreters.
+      - if: runner.os != 'Linux'
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: |
+            3.10
+            3.11
+            3.12
+            3.13
+            3.14
+            3.15
+          allow-prereleases: true
+      - name: Build wheels
+        uses: PyO3/maturin-action@e83996d129638aa358a18fbd1dfb82f0b0fb5d3b # v1.51.0
+        with:
+          maturin-version: ${{ env.MATURIN_VERSION }}
+          target: ${{ matrix.target }}
+          manylinux: ${{ matrix.manylinux }}
+          container: ${{ matrix.container }}
+          args: --release --out dist --interpreter ${{ env.INTERPRETERS }}
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: wheels-${{ runner.os }}
+          path: dist/*.whl
+          if-no-files-found: error
+
+  sdist:
+    name: Build sdist
+    runs-on: ubuntu-latest
+    steps:
+      - *checkout
+      - name: Check tag version
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          python3 - <<'PY'
+          import os
+          import tomllib
+
+          tag = os.environ["GITHUB_REF_NAME"]
+          for filename, section in [("Cargo.toml", "package"), ("pyproject.toml", "project")]:
+              with open(filename, "rb") as manifest:
+                  version = tomllib.load(manifest)[section]["version"]
+              if tag != f"v{version}":
+                  raise SystemExit(f"Tag {tag} does not match {filename} version {version}")
+          PY
+      - name: Build sdist
+        uses: PyO3/maturin-action@e83996d129638aa358a18fbd1dfb82f0b0fb5d3b # v1.51.0
+        with:
+          maturin-version: ${{ env.MATURIN_VERSION }}
+          command: sdist
+          args: --out dist
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: sdist
+          path: dist/*.tar.gz
+          if-no-files-found: error
+
+  test:
+    name: Test (${{ matrix.os }}, Python ${{ matrix.python }})
+    needs: wheels
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, macos-15-intel, windows-latest]
+        python: ["3.10", "3.11", "3.12", "3.13", "3.14", "3.15"]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        # Fail on the first failing command on every OS (pwsh only checks the last one).
+        shell: bash
+    steps:
+      - *checkout
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: ${{ matrix.python }}
+          allow-prereleases: true
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: wheels-${{ runner.os }}
+          path: dist
+      - name: Install test dependencies and the built wheel
+        run: |
+          python -m pip install -r requirements-dev.txt
+          python -m pip install --no-index --find-links dist --only-binary :all: rs_parsepatch
+      - name: Run tests
+        run: python -m pytest tests
+
+  publish:
+    name: Publish to PyPI
+    # Only a tag push publishes; a manual run, even on a tag, only builds and tests.
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    needs: [sdist, test]
+    runs-on: ubuntu-latest
+    environment:
+      name: release
+      url: https://pypi.org/project/rs_parsepatch/
+    permissions:
+      id-token: write # Needed for PyPI trusted publishing.
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3
+        with:
+          skip-existing: true
