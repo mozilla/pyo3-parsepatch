@@ -28,9 +28,9 @@ checksum = "9f7c3e4beb33f85d45ae3e3a1792185706c8e16d043238c593331cc7cd313b50"
 
 [[package]]
 name = "parsepatch"
-version = "0.3.1"
+version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "46c056f107e40038b8a19e5ff78ae6308ff0704dd36aaf4d1b1e0ec568f39543"
+checksum = "44c9579886f43a63798ef5bcc5e90619384af56f79a34acfd98184200f509f11"
 dependencies = [
  "log",
 ]
@@ -118,7 +118,7 @@ dependencies = [
 
 [[package]]
 name = "rs_parsepatch"
-version = "0.4.8"
+version = "0.4.9"
 dependencies = [
  "parsepatch",
  "pyo3",
