@@ -8,30 +8,23 @@ ENV PATH=/opt/python/cp310-cp310/bin:/opt/python/cp311-cp311/bin:/opt/python/cp3
 # Otherwise `cargo new` errors
 ENV USER=root
 ENV MATURIN_VERSION=1.16.0
-ARG MUSL_VERSION=1.2.6
-ARG MUSL_SHA256=d585fd3b613c66151fc3249e8ed44f77020cb5e6c1e635a616d3f9f82460512a
+# sha256 of maturin-${MATURIN_VERSION}-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.musllinux_1_1_x86_64.whl
+ARG MATURIN_SHA256=837db2f4d93d4899c3ac393fb3cc9eebf35b6002336e5d574f4a4fb6c49fe283
 ARG RUSTUP_VERSION=1.29.3
 ARG RUSTUP_INIT_SHA256=b1c8cb14e30889e7e2999e6b69e62d9e9b9ffc0f4df8180564d306d9680e6c55
 
-RUN curl -fsSL https://www.musl-libc.org/releases/musl-${MUSL_VERSION}.tar.gz -o musl.tar.gz \
-    && echo "${MUSL_SHA256}  musl.tar.gz" | sha256sum -c - \
-    && tar -xzf musl.tar.gz \
-    && rm -f musl.tar.gz \
-    && cd musl-${MUSL_VERSION} \
-    && ./configure \
-    && make install -j$(expr $(nproc) \+ 1) \
-    && cd .. \
-    && rm -rf x86_64-unknown-linux-musl \
-    && curl -fsSL https://static.rust-lang.org/rustup/archive/${RUSTUP_VERSION}/x86_64-unknown-linux-gnu/rustup-init -o rustup-init \
+RUN curl -fsSL https://static.rust-lang.org/rustup/archive/${RUSTUP_VERSION}/x86_64-unknown-linux-gnu/rustup-init -o rustup-init \
     && echo "${RUSTUP_INIT_SHA256}  rustup-init" | sha256sum -c - \
     && chmod +x rustup-init \
     && ./rustup-init --default-toolchain none -y \
     && rm -f rustup-init \
     && rustup set profile minimal \
-    && rustup toolchain install stable --target x86_64-unknown-linux-musl \
+    && rustup toolchain install stable \
     && rustup default stable \
     && pip3.14 install --no-cache-dir virtualenv \
-    && cargo install --locked maturin --version ${MATURIN_VERSION}
+    && echo "maturin==${MATURIN_VERSION} --hash=sha256:${MATURIN_SHA256}" > maturin-requirements.txt \
+    && pip3.14 install --no-cache-dir --only-binary :all: --require-hashes -r maturin-requirements.txt \
+    && rm -f maturin-requirements.txt
 
 WORKDIR /rs_pp
 
@@ -52,7 +45,3 @@ RUN for py in 3.10 3.11 3.12 3.13 3.14 3.15; do \
       && python -m pytest . ) \
       && rm -r "${venv}"; \
     done
-
-
-ENV RUSTFLAGS="-C target-feature=-crt-static"
-RUN maturin build --target x86_64-unknown-linux-musl --manylinux off --interpreter python3.10 python3.11 python3.12 python3.13 python3.14 python3.15
