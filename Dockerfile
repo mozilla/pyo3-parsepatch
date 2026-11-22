@@ -41,7 +41,7 @@ COPY src src
 COPY tests tests
 COPY Cargo.* ./
 COPY pyproject.toml ./
-COPY README.md README.md
+COPY README.md LICENSE-MPL-2.0 ./
 
 RUN for py in 3.10 3.11 3.12 3.13 3.14 3.15; do \
       venv="/venv${py/./}"; \
